@@ -1,3 +1,16 @@
+
+export interface User {
+  id: number;
+  username: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  register: (username: string, password: string) => Promise<void>;
+}
+
 // Тип для модели TicketCategory
 export interface TicketCategory {
     id: number;  // Django обычно добавляет поле id по умолчанию

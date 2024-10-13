@@ -17,14 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-
-from app.views import TicketViewSet
+from app.views import TicketViewSet, register
+from app.views import LoginView
 
 router = routers.DefaultRouter()
 router.register('tickets', TicketViewSet)
 
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/register/', register, name='register'),
+    path('api/login/', LoginView.as_view(), name='login'),
 ]

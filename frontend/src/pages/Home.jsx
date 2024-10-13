@@ -2,8 +2,6 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import TicketStore from "../data/TicketStore.js"
 
-import error from "eslint-plugin-react/lib/util/error.js";
-
 export default function Home() {
     const {/** @type {Ticket[]} */ tickets, addTicket, updateTicket, removeTicket, setTickets} = TicketStore()
     const url = "http://127.0.0.1:8000/"

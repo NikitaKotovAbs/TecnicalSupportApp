@@ -8,6 +8,8 @@ import React from "react";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import MainPage from "./pages/MainPage.jsx";
+import RegisterPage from "./pages/RegisterPage.jsx";
+import AuthPage from "./pages/AuthPage.jsx";
 //Todo import NotFoundPage from './NotFoundPage';  // Импорт страницы с ошибкой 404
 
 
@@ -19,7 +21,8 @@ export default function App() {
                 <Layout>
                     <Routes>
                         <Route index element={<MainPage/>}/>
-                        {/*<Route path="/Test" element={<Test/>}/>*/}
+                        <Route path="/register" element={<RegisterPage/>}/>
+                        <Route path="/auth" element={<AuthPage/>}/>
                         {/*<Route path="*" element={<ErrorMessage/>}/> /!* Маршрут для ненайденных страниц *!/*/}
                     </Routes>
                 </Layout>

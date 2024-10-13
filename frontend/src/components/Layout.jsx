@@ -1,28 +1,105 @@
-import {Link} from "react-router-dom";
-import React from "react";
-import logo from "../assets/logo.png"
+import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import logo from "../assets/logo.png";
+import AuthStore from '../data/AuthStore.js';
 
-export default function Layout({children}) {
+export default function Layout({ children }) {
+    const { user, logout } = AuthStore();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
     return (
         <>
-            <div id={Layout.name} style={{justifyContent: 'space-between'}} className="layout flex mt-4  w-[50%] h-28 items-center ml-[20rem]
-        font-montserrat">
-                <div>
-                    <img className="border w-24 h-auto" src={logo} alt="logo"/>
+            {/* Верхняя панель */}
+            <header className="bg-white shadow-md">
+                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                    {/* Логотип */}
+                    <div>
+                        <img className="w-24 h-auto" src={logo} alt="logo" />
+                    </div>
+
+                    {/* Навигация */}
+                    <nav className="hidden md:flex space-x-8 items-center text-gray-800">
+                        <Link to='/home' className="hover:text-blue-500 transition-colors duration-300">О нас</Link>
+                        <Link to='/Test' className="hover:text-blue-500 transition-colors duration-300">Команда</Link>
+                        <Link to='/' className="hover:text-blue-500 transition-colors duration-300">FAQ</Link>
+                        <button className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                            Задать вопрос
+                        </button>
+                        <div className="flex items-center space-x-4">
+                            {user ? (
+                                <>
+                                    <p className="text-gray-800">{user.username}</p>
+                                    <button
+                                        onClick={logout}
+                                        className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors duration-300"
+                                    >
+                                        Выйти
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to='/register' className="hover:text-blue-500 transition-colors duration-300">Регистрация</Link>
+                                    <Link to='/auth' className="hover:text-blue-500 transition-colors duration-300">Авторизация</Link>
+                                </>
+                            )}
+                        </div>
+                    </nav>
+
+                    {/* Мобильная навигация */}
+                    <div className="md:hidden">
+                        <button onClick={toggleMenu} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">
+                            Меню
+                        </button>
+                    </div>
                 </div>
-                <div className="border flex justify-between w-[70%] text-black">
 
-                    <Link className={'border'} to='/home'>О нас</Link>
-                    <Link className={'border'} to='/Test'>Команда</Link>
-                    <Link className={'border'} to='/'>FAQ</Link>
-                    <button className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
-                        Задать вопрос
-                    </button>
+                {/* Бургер-меню с анимацией */}
+                <div className={`fixed top-0 left-0 right-0 bg-white shadow-lg z-50 transition-transform duration-300 ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+                    <div className="flex flex-col items-center py-4">
+                        <button onClick={toggleMenu} className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg mb-4">
+                            Закрыть меню
+                        </button>
+                        <Link to='/home' className="hover:text-blue-500 transition-colors duration-300 py-2">О нас</Link>
+                        <Link to='/Test' className="hover:text-blue-500 transition-colors duration-300 py-2">Команда</Link>
+                        <Link to='/' className="hover:text-blue-500 transition-colors duration-300 py-2">FAQ</Link>
+                        <button className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                            Задать вопрос
+                        </button>
+                        {user ? (
+                            <>
+                                <p className="text-gray-800 py-2">{user.username}</p>
+                                <button
+                                    onClick={logout}
+                                    className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors duration-300"
+                                >
+                                    Выйти
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link to='/register' className="hover:text-blue-500 transition-colors duration-300 py-2">Регистрация</Link>
+                                <Link to='/auth' className="hover:text-blue-500 transition-colors duration-300 py-2">Авторизация</Link>
+                            </>
+                        )}
+                    </div>
                 </div>
+            </header>
 
+            {/* Контент */}
+            <main className="container mx-auto px-4 py-8">
+                {children}
+            </main>
 
-            </div>
-            {children}
+            {/* Футер */}
+            <footer className="bg-gray-800 text-white py-4 mt-8">
+                <div className="container mx-auto px-4 text-center">
+                    © 2024 Ваша компания. Все права защищены.
+                </div>
+            </footer>
         </>
-    )
+    );
 }

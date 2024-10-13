@@ -1,7 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { config } from 'dotenv';
 
-// https://vitejs.dev/config/
+
+// Load environment variables from .env file
+config();
+
 export default defineConfig({
-  plugins: [react()],
-})
+  // Your Vite configuration
+  define: {
+    'process.env': process.env
+  },
+  plugins: [react()]
+
+});
