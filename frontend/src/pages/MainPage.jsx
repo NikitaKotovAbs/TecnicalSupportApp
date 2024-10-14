@@ -12,11 +12,11 @@ export default function MainPage() {
             <div
                 className="relative flex justify-center items-center h-96 mt-24 bg-cover bg-center animate-fadeBackground">
 
-                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 
 
                 <h1 className="relative text-white text-4xl font-bold text-center max-w-xl mx-auto">
-                    Поддержка нашей компании работает <span className="text-yellow-400">24/7</span>
+                    Наша поддержка работает <span className="text-yellow-400">24/7</span>
                 </h1>
             </div>
 
