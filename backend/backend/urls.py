@@ -17,11 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from app.views import TicketViewSet, register
-from app.views import LoginView
+from app.controller import TicketViewSet, TicketCategoryViewSet, register
+from app.controller import LoginView
 
 router = routers.DefaultRouter()
 router.register('tickets', TicketViewSet)
+router.register('categories', TicketCategoryViewSet)
 
 
 

@@ -10,7 +10,7 @@ export default function MainPage() {
     return (
         <div>
             <div
-                className="relative flex justify-center items-center h-96 mt-24 bg-cover bg-center animate-fadeBackground">
+                className="relative flex justify-center items-center h-96 mt-24 bg-cover bg-center animate-fadeBackground z-0">
 
                 <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 

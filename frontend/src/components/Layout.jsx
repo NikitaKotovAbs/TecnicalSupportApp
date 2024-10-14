@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import React, { useState } from "react";
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'; // Импорт иконок
 import logo from "../assets/logo.png";
 import AuthStore from '../data/AuthStore.js';
 
 export default function Layout({ children }) {
+    const navigate = useNavigate();
     const { user, logout } = AuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -15,11 +16,11 @@ export default function Layout({ children }) {
     return (
         <>
             {/* Верхняя панель */}
-            <header className="bg-white shadow-md fixed w-full">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <header className="bg-white shadow-md fixed w-full z-10">
+                <div className="container mx-auto px-10 py-1 flex items-center justify-between">
                     {/* Логотип */}
                     <div>
-                        <img className="w-24 h-auto" src={logo} alt="logo" />
+                        <img className="w-20 h-auto" src={logo} alt="logo" />
                     </div>
 
                     {/* Надпись Caty Support */}
@@ -32,9 +33,13 @@ export default function Layout({ children }) {
                         <Link to='/home' className="hover:text-blue-500 transition-colors duration-300">О нас</Link>
                         <Link to='/Test' className="hover:text-blue-500 transition-colors duration-300">Команда</Link>
                         <Link to='/' className="hover:text-blue-500 transition-colors duration-300">FAQ</Link>
-                        <button className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                        <button
+                            onClick={() => navigate('/tickets')}
+                            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                        >
                             Задать вопрос
                         </button>
+
                         <div className="flex items-center space-x-4">
                             {user ? (
                                 <>

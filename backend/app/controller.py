@@ -10,6 +10,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .pagination import CustomPagination
 from .serializer import *
+
+
 # Create your views here.
 
 
@@ -36,6 +38,18 @@ class LoginView(APIView):
         if serializer.is_valid():
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TicketCategoryViewSet(viewsets.ModelViewSet):
+    queryset = TicketCategory.objects.all()
+    serializer_class = TicketCategorySerializer
+    http_method_names = ['get', 'post', 'put', 'delete', 'head']
+    pagination_class = CustomPagination
+    # Направление сортировки: 'asc' для по возрастанию, '-desc' для по убыванию
+    ordering_fields = ['id', 'name', 'is_deleted']
+    search_fields = ['name']
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()

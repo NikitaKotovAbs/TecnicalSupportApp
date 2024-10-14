@@ -10,6 +10,7 @@ import Layout from "./components/Layout.jsx";
 import MainPage from "./pages/MainPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import AuthPage from "./pages/AuthPage.jsx";
+import TicketsPage from "./pages/TicketsPage.jsx";
 //Todo import NotFoundPage from './NotFoundPage';  // Импорт страницы с ошибкой 404
 
 
@@ -23,6 +24,7 @@ export default function App() {
                         <Route index element={<MainPage/>}/>
                         <Route path="/register" element={<RegisterPage/>}/>
                         <Route path="/auth" element={<AuthPage/>}/>
+                        <Route path="/tickets" element={<TicketsPage/>}/>
                         {/*<Route path="*" element={<ErrorMessage/>}/> /!* Маршрут для ненайденных страниц *!/*/}
                     </Routes>
                 </Layout>
