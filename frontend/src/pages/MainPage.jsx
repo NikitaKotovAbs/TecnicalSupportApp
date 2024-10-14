@@ -9,7 +9,7 @@ export default function MainPage() {
 
     return (
         <div>
-            <div className="flex justify-center items-center bg-black h-96">
+            <div className="flex justify-center items-center bg-black h-96 mt-24 ">
                 <h1 className="text-white text-3xl text-center">Поддержка нашей компании работает 24/7</h1>
             </div>
             <div className="flex flex-col mt-20 p-5">

@@ -15,11 +15,16 @@ export default function Layout({ children }) {
     return (
         <>
             {/* Верхняя панель */}
-            <header className="bg-white shadow-md">
+            <header className="bg-white shadow-md fixed w-full">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     {/* Логотип */}
                     <div>
                         <img className="w-24 h-auto" src={logo} alt="logo" />
+                    </div>
+
+                    {/* Надпись Caty Support */}
+                    <div className="text-xl font-semibold text-gray-800 mx-4">
+                        Caty Support
                     </div>
 
                     {/* Навигация */}
@@ -61,7 +66,7 @@ export default function Layout({ children }) {
                 {/* Бургер-меню с анимацией */}
                 <div className={`fixed top-0 left-0 right-0 bg-white shadow-lg z-50 transition-transform duration-300 ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
                     <div className="flex flex-col items-center py-4">
-                        <button onClick={toggleMenu} className=" text-black font-bold py-2 px-4 rounded-lg mb-4 flex items-center">
+                        <button onClick={toggleMenu} className="text-black font-bold py-2 px-4 rounded-lg mb-4 flex items-center">
                             <XMarkIcon className="w-6 h-6" />
                         </button>
                         <Link to='/home' className="hover:text-blue-500 transition-colors duration-300 py-2">О нас</Link>
@@ -75,7 +80,7 @@ export default function Layout({ children }) {
                                 <p className="text-gray-800 py-2">{user.username}</p>
                                 <button
                                     onClick={logout}
-                                    className=" text-red-500 font-bold py-2 px-4 rounded-lg transition-colors duration-300"
+                                    className="text-red-500 font-bold py-2 px-4 rounded-lg transition-colors duration-300"
                                 >
                                     Выйти
                                 </button>
