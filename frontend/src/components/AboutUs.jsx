@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-const AboutUs = ({ text, headline, image, headlineWordsPerLine = 4, textWordsPerLine = 7 }) => {
+const AboutUs = forwardRef(({ text, headline, image, headlineWordsPerLine = 4, textWordsPerLine = 7 }, ref) => {
     const formatTextWithLineBreaks = (text, wordsPerLine) => {
         const words = text.split(' ');
         const result = [];
@@ -19,7 +19,7 @@ const AboutUs = ({ text, headline, image, headlineWordsPerLine = 4, textWordsPer
     };
 
     return (
-        <div className="flex flex-col md:flex-row items-center p-6">
+        <div ref={ref} className="flex flex-col md:flex-row items-center p-6">
             <div className="w-full md:w-[60rem] flex flex-col justify-center">
                 <h1 className="text-3xl md:text-4xl font-bold leading-normal text-center md:text-left">
                     {formatTextWithLineBreaks(headline, headlineWordsPerLine)}
@@ -33,6 +33,6 @@ const AboutUs = ({ text, headline, image, headlineWordsPerLine = 4, textWordsPer
             </div>
         </div>
     );
-};
+});
 
 export default AboutUs;

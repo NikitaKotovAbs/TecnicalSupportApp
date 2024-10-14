@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'; // Импорт иконок
 import logo from "../assets/logo.png";
 import AuthStore from '../data/AuthStore.js';
 
@@ -51,8 +52,8 @@ export default function Layout({ children }) {
 
                     {/* Мобильная навигация */}
                     <div className="md:hidden">
-                        <button onClick={toggleMenu} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">
-                            Меню
+                        <button onClick={toggleMenu} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg flex items-center">
+                            <Bars3Icon className="w-6 h-6" />
                         </button>
                     </div>
                 </div>
@@ -60,8 +61,8 @@ export default function Layout({ children }) {
                 {/* Бургер-меню с анимацией */}
                 <div className={`fixed top-0 left-0 right-0 bg-white shadow-lg z-50 transition-transform duration-300 ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
                     <div className="flex flex-col items-center py-4">
-                        <button onClick={toggleMenu} className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg mb-4">
-                            Закрыть меню
+                        <button onClick={toggleMenu} className=" text-black font-bold py-2 px-4 rounded-lg mb-4 flex items-center">
+                            <XMarkIcon className="w-6 h-6" />
                         </button>
                         <Link to='/home' className="hover:text-blue-500 transition-colors duration-300 py-2">О нас</Link>
                         <Link to='/Test' className="hover:text-blue-500 transition-colors duration-300 py-2">Команда</Link>
@@ -74,7 +75,7 @@ export default function Layout({ children }) {
                                 <p className="text-gray-800 py-2">{user.username}</p>
                                 <button
                                     onClick={logout}
-                                    className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors duration-300"
+                                    className=" text-red-500 font-bold py-2 px-4 rounded-lg transition-colors duration-300"
                                 >
                                     Выйти
                                 </button>

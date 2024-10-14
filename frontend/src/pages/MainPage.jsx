@@ -6,6 +6,7 @@ import AboutUs from "../components/AboutUs.jsx";
 import AboutUsReverse from "../components/AboutUsReverse.jsx";
 
 export default function MainPage() {
+
     return (
         <div>
             <div className="flex justify-center items-center bg-black h-96">
