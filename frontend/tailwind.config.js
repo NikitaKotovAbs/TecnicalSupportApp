@@ -7,7 +7,19 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            keyframes: {
+                fadeBackground: {
+                    '0%': {backgroundImage: "url('./src/assets/photo1.png')"},
+                    '33%': {backgroundImage: "url('./src/assets/photo2.png')"},
+                    '66%': {backgroundImage: "url('./src/assets/photo3.png')"},
+                    '100%': {backgroundImage: "url('./src/assets/photo1.png')"}, // Цикл возвращается к первой картинке
+                },
+            },
+            animation: {
+                fadeBackground: 'fadeBackground 15s ease-in-out infinite', // Плавная анимация с циклом
+            },
+        },
     },
     plugins: [
         "prettier-plugin-tailwindcss",

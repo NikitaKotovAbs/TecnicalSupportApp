@@ -9,9 +9,17 @@ export default function MainPage() {
 
     return (
         <div>
-            <div className="flex justify-center items-center bg-black h-96 mt-24 ">
-                <h1 className="text-white text-3xl text-center">Поддержка нашей компании работает 24/7</h1>
+            <div
+                className="relative flex justify-center items-center h-96 mt-24 bg-cover bg-center animate-fadeBackground">
+
+                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+
+
+                <h1 className="relative text-white text-4xl font-bold text-center max-w-xl mx-auto">
+                    Поддержка нашей компании работает <span className="text-yellow-400">24/7</span>
+                </h1>
             </div>
+
             <div className="flex flex-col mt-20 p-5">
                 <AboutUs
                     headline="Давайте расскажем немного о нашей команде"
@@ -33,6 +41,17 @@ export default function MainPage() {
                     text="Каждый специалист работает с индивидуальным подходом к клиенту, обеспечивая высокий уровень сервиса и оперативное реагирование на любые запросы."
                     image={clients}
                 />
+            </div>
+            <div className="">
+                <div className="">
+
+                </div>
+                <div className="">
+
+                </div>
+                <div className="">
+
+                </div>
             </div>
         </div>
     );
