@@ -104,13 +104,7 @@ export default function Layout({ children }) {
             <main className="container mx-auto px-4 py-8">
                 {children}
             </main>
-
-            {/* Футер */}
-            <footer className="bg-gray-800 text-white py-4 mt-8">
-                <div className="container mx-auto px-4 text-center">
-                    © 2024 Ваша компания. Все права защищены.
-                </div>
-            </footer>
+            
         </>
     );
 }

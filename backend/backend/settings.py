@@ -24,8 +24,10 @@ SECRET_KEY = 'django-insecure-o!-vbvwq+e*b(&20r6z-1!%1=@%%4ftc57dxee7apq!$wq6ixa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Адресс для локальной сети Radmin
+# ALLOWED_HOSTS = ['26.143.27.5', 'localhost']
 
+ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [

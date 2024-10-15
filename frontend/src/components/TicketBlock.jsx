@@ -1,3 +1,9 @@
+const statusTranslations = {
+    open: "Открыта",
+    in_progress: "В работе",
+    closed: "Закрыта"
+};
+
 export default function TicketBlock({ title, description, status, category }) {
     return (
         <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200 m-4 flex flex-col w-full md:w-1/3 lg:w-1/4">
@@ -9,7 +15,7 @@ export default function TicketBlock({ title, description, status, category }) {
                         : status === "in_progress" ? "bg-yellow-200 text-yellow-800"
                             : "bg-red-200 text-red-800"
                 }`}>
-                    {status}
+                    {statusTranslations[status] || status}
                 </span>
                 <span className="text-gray-500 text-sm">{category}</span>
             </div>

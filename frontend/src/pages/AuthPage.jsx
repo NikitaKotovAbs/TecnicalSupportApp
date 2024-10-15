@@ -1,20 +1,25 @@
 import React, {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import AuthStore from '../data/AuthStore.js';
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
 
 const AuthPage = () => {
     const navigate = useNavigate();
+    const location = useLocation(); // Получаем объект location
     const {register, handleSubmit, formState: {errors}} = useForm();
     const {login, isLoading, error, user} = AuthStore();
+
+    const from = location.state?.from || "/"; // Берем путь откуда пришел пользователь, если нет - на главную
 
     const onSubmit = async (data) => {
         await login(data.username, data.password);
     };
 
     useEffect(() => {
-        user ? navigate("/") : null
-    }, [user, navigate]);
+        if (user) {
+            navigate(from); // Перенаправляем обратно, если авторизовался
+        }
+    }, [user, navigate, from]);
 
     return (
         <div className="flex justify-center items-center h-screen">
