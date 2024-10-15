@@ -30,7 +30,7 @@ export default function CreateTicketForm() {
                 await loadTicketsWithCategories(); // Загрузка тикетов с категориями
                 await loadCategories(); // Загрузка категорий
                 // Пример статичных приоритетов (можно заменить на данные из API)
-                setPriorities(['Низкий', 'Средний', 'Высокий', 'Срочный']);
+                // setPriorities(['Низкий', 'Средний', 'Высокий', 'Срочный']);
             } catch (error) {
                 console.error("Ошибка при загрузке категорий и приоритетов:", error.message);
             } finally {

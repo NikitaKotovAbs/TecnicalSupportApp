@@ -3,11 +3,11 @@ import axios from "axios";
 
 // URL для API
 const API_URL = import.meta.env.VITE_API_URL;
+
 /** @typedef {import('../types').Ticket} Ticket */
 
 // Хранилище для работы с тикетами
-const TicketStore = create((set) => ({
-    /** @type {Ticket[]} */
+const TicketStore = create((set, get) => ({
     tickets: [],
     categories: [],
     isLoading: false,
@@ -18,8 +18,9 @@ const TicketStore = create((set) => ({
         "high": "Высокий",
         "urgent": "Срочный",
     }),
-    created_by: 0,
-
+    created_by: Number(),
+    page: 1,
+    totalPages: 1, // Добавляем общее количество страниц
 
     // Функция добавления тикета
     addTicket: (ticket) => set((state) => ({tickets: [...state.tickets, ticket]})),
@@ -28,14 +29,8 @@ const TicketStore = create((set) => ({
     createTicket: async (ticketData) => {
         try {
             set({isLoading: true, error: null});
-
-            // Заменяем 'Низкий' на 'low'
-            // ticketData.priority = ticketData.priority === 'Низкий' ? 'low' : ticketData.priority;
-
-            console.log(ticketData);
             const response = await axios.post(`${API_URL}/api/tickets/`, ticketData);
             const newTicket = response.data;
-            console.log(newTicket);
 
             // Добавляем новый тикет в хранилище
             set((state) => ({
@@ -67,51 +62,55 @@ const TicketStore = create((set) => ({
         try {
             const response = await axios.get(`${API_URL}/api/categories/`);
             const categories = response.data.results;
-            // console.log(categories)
             set({categories}); // Сохранение категорий в состояние
         } catch (error) {
             console.error("Ошибка при загрузке категорий: ", error.message);
         }
     },
 
-    // Функция загрузки тикетов и категорий с API
-    loadTicketsWithCategories: async () => {
+// Функция загрузки тикетов и категорий с API
+    loadTicketsWithCategories: async (page) => {
         try {
-            // Получаем тикеты
             set({isLoading: true, error: null});
 
-            const ticketsResponse = await axios.get(`${API_URL}/api/tickets/`);
-            const tickets = ticketsResponse.data.results;
-            // Логируем тикеты для проверки
-            // console.log("Тикеты:", tickets);
+            const currentPage = page || get().page; // Используем get() для получения текущей страницы
+            const createdBy = get().created_by; // Получаем id пользователя
 
-            // Получаем категории
+            // Запрашиваем тикеты с сервера
+            const ticketsResponse = await axios.get(`${API_URL}/api/tickets/?page=${currentPage}&created_by=${createdBy}`);
+            const {results: tickets, count} = ticketsResponse.data;
+
+            // Вычисляем количество страниц
+            const totalPages = Math.ceil(count / 5); // Если у вас по 5 тикетов на странице
+
+            // Если текущая страница больше доступных страниц, откатимся на последнюю доступную страницу
+            if (currentPage > totalPages) {
+                set({page: totalPages, isLoading: false});
+                return;
+            }
+
+            // Загружаем категории
             const categoriesResponse = await axios.get(`${API_URL}/api/categories/`);
-            const categories = categoriesResponse.data.results || []; // Установить пустой массив по умолчанию
+            const categories = categoriesResponse.data.results || [];
 
-            // Логируем категории для проверки
-            // console.log("Категории:", categories);
-
-            // Создаем мап категорий по id для быстрого доступа
             const categoryMap = categories.reduce((acc, category) => {
-                acc[category.id] = category.name; // Присваиваем имя категории по ID
+                acc[category.id] = category.name;
                 return acc;
             }, {});
 
-            // Добавляем название категории к каждому тикету
             const ticketsWithCategories = tickets.map((ticket) => ({
                 ...ticket,
-                categoryName: categoryMap[ticket.category] || "Неизвестная категория", // Здесь получаем имя категории по ID
+                categoryName: categoryMap[ticket.category] || "Неизвестная категория",
             }));
 
-            // Обновляем состояние тикетов в хранилище
-            set({tickets: ticketsWithCategories, isLoading: false});
+            // Обновляем тикеты, общее количество страниц и текущее состояние загрузки
+            set({tickets: ticketsWithCategories, totalPages, isLoading: false});
         } catch (error) {
             console.error("Ошибка при загрузке тикетов или категорий: ", error.message);
+            set({isLoading: false});
         }
-    }
-
-
+    },
+    setPage: (newPage) => set(() => ({page: newPage})),
 }));
 
 export default TicketStore;
