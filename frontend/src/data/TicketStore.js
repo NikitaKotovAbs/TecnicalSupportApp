@@ -9,11 +9,43 @@ const API_URL = import.meta.env.VITE_API_URL;
 const TicketStore = create((set) => ({
     /** @type {Ticket[]} */
     tickets: [],
+    categories: [],
     isLoading: false,
     error: null,
+    priority: Object.entries({
+        "low": "Низкий",
+        "medium": "Средний",
+        "high": "Высокий",
+        "urgent": "Срочный",
+    }),
+    created_by: 0,
+
 
     // Функция добавления тикета
     addTicket: (ticket) => set((state) => ({tickets: [...state.tickets, ticket]})),
+
+    // Функция для создания нового тикета
+    createTicket: async (ticketData) => {
+        try {
+            set({isLoading: true, error: null});
+
+            // Заменяем 'Низкий' на 'low'
+            // ticketData.priority = ticketData.priority === 'Низкий' ? 'low' : ticketData.priority;
+
+            console.log(ticketData);
+            const response = await axios.post(`${API_URL}/api/tickets/`, ticketData);
+            const newTicket = response.data;
+            console.log(newTicket);
+
+            // Добавляем новый тикет в хранилище
+            set((state) => ({
+                tickets: [...state.tickets, newTicket],
+                isLoading: false,
+            }));
+        } catch (error) {
+            console.error("Ошибка при создании тикета: ", error.response.data);
+        }
+    },
 
     // Функция обновления тикета
     updateTicket: (updatedTicket) => set((state) => ({
@@ -30,15 +62,26 @@ const TicketStore = create((set) => ({
     // Функция установки тикетов
     setTickets: (tickets) => set(() => ({tickets})),
 
+    // Функция загрузки категорий
+    loadCategories: async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/categories/`);
+            const categories = response.data.results;
+            // console.log(categories)
+            set({categories}); // Сохранение категорий в состояние
+        } catch (error) {
+            console.error("Ошибка при загрузке категорий: ", error.message);
+        }
+    },
+
     // Функция загрузки тикетов и категорий с API
     loadTicketsWithCategories: async () => {
         try {
             // Получаем тикеты
-            set({ isLoading: true, error: null });
+            set({isLoading: true, error: null});
 
             const ticketsResponse = await axios.get(`${API_URL}/api/tickets/`);
             const tickets = ticketsResponse.data.results;
-
             // Логируем тикеты для проверки
             // console.log("Тикеты:", tickets);
 

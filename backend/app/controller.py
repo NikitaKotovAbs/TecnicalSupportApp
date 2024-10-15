@@ -1,6 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
-from rest_framework import viewsets, filters, status
+from rest_framework import viewsets, filters, status, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -60,3 +60,9 @@ class TicketViewSet(viewsets.ModelViewSet):
     ordering_fields = ['id', 'name', 'is_deleted']
     search_fields = ['name']
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+
+
+
+# class TicketCreateView(generics.CreateAPIView):
+#     queryset = Ticket.objects.all()
+#     serializer_class = TicketSerializer
