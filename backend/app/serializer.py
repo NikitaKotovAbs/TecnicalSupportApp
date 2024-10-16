@@ -39,3 +39,22 @@ class TicketSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = '__all__'
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+    # def create(self, validated_data):
+    #     print("Я ВАОШЁЛ В МЕТОД")
+    #     user = self.context['request'].user
+    #     if not user.is_authenticated:
+    #         raise serializers.ValidationError("Пользователь не аутентифицирован")
+    #     validated_data['author'] = user
+    #     return super().create(validated_data)

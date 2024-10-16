@@ -6,7 +6,7 @@ import Loader from "../components/Loader.jsx";
 import {useNavigate} from "react-router-dom";
 import CreateTicketForm from "../components/CreateTicketForm.jsx";
 
-export default function TicketsPage() {
+export default function TicketsPage({}) {
     const {tickets, loadTicketsWithCategories, isLoading, page, totalPages} = TicketStore();
     const {user} = AuthStore();
     const navigate = useNavigate();
@@ -89,6 +89,7 @@ export default function TicketsPage() {
                             filteredTickets.map(ticket => (
                                 <TicketBlock
                                     key={ticket.id}
+                                    id={ticket.id}  // Передаем ID тикета
                                     title={ticket.title}
                                     description={ticket.description}
                                     status={ticket.status}
@@ -101,27 +102,27 @@ export default function TicketsPage() {
                         )}
                     </div>
 
-                    {/* Пагинация */}
-                    {filteredTickets.length > 0 && (
-                        // Кнопки пагинации с проверкой на доступность
-                        <div className="flex justify-center mt-4">
-                            <button
-                                onClick={() => handlePageChange(page - 1)}
-                                disabled={page === 1}
-                                className={`px-4 py-2 ${page === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-lg`}
-                            >
-                                Назад
-                            </button>
-                            <span className="mx-4 text-lg">{page} из {totalPages}</span>
-                            <button
-                                onClick={() => handlePageChange(page + 1)}
-                                disabled={page === totalPages}
-                                className={`px-4 py-2 ${page === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-lg`}
-                            >
-                                Вперед
-                            </button>
-                        </div>
-                    )}
+                    {/*/!* Пагинация *!/*/}
+                    {/*{filteredTickets.length > 0 && (*/}
+                    {/*    // Кнопки пагинации с проверкой на доступность*/}
+                    {/*    <div className="flex justify-center mt-4">*/}
+                    {/*        <button*/}
+                    {/*            onClick={() => handlePageChange(page - 1)}*/}
+                    {/*            disabled={page === 1}*/}
+                    {/*            className={`px-4 py-2 ${page === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-lg`}*/}
+                    {/*        >*/}
+                    {/*            Назад*/}
+                    {/*        </button>*/}
+                    {/*        <span className="mx-4 text-lg">{page} из {totalPages}</span>*/}
+                    {/*        <button*/}
+                    {/*            onClick={() => handlePageChange(page + 1)}*/}
+                    {/*            disabled={page === totalPages}*/}
+                    {/*            className={`px-4 py-2 ${page === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-lg`}*/}
+                    {/*        >*/}
+                    {/*            Вперед*/}
+                    {/*        </button>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
                 </div>
 
                 {/* Блок с формой создания тикета */}

@@ -2,6 +2,7 @@ from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from rest_framework import viewsets, filters, status, generics
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -40,9 +41,27 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProtectedEndpointView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "This is a protected endpoint!"})
+
+
 class TicketCategoryViewSet(viewsets.ModelViewSet):
     queryset = TicketCategory.objects.all()
     serializer_class = TicketCategorySerializer
+    http_method_names = ['get', 'post', 'put', 'delete', 'head']
+    pagination_class = CustomPagination
+    # Направление сортировки: 'asc' для по возрастанию, '-desc' для по убыванию
+    ordering_fields = ['id', 'name', 'is_deleted']
+    search_fields = ['name']
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     http_method_names = ['get', 'post', 'put', 'delete', 'head']
     pagination_class = CustomPagination
     # Направление сортировки: 'asc' для по возрастанию, '-desc' для по убыванию
@@ -62,6 +81,18 @@ class TicketViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
 
 
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    http_method_names = ['get', 'post', 'put', 'delete', 'head']
+    pagination_class = CustomPagination
+    # Направление сортировки: 'asc' для по возрастанию, '-desc' для по убыванию
+    ordering_fields = ['id', 'name', 'is_deleted']
+    search_fields = ['name']
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+
+    # def perform_create(self, serializer):
+    #     serializer.save(author=self.request.user)  # Устанавливаем автора на текущего аутентифицированного пользователя
 
 # class TicketCreateView(generics.CreateAPIView):
 #     queryset = Ticket.objects.all()

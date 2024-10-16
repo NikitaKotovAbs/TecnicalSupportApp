@@ -10,6 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const TicketStore = create((set, get) => ({
     tickets: [],
     categories: [],
+    ticket: null,
     isLoading: false,
     error: null,
     priority: Object.entries({
@@ -68,6 +69,8 @@ const TicketStore = create((set, get) => ({
         }
     },
 
+
+
 // Функция загрузки тикетов и категорий с API
     loadTicketsWithCategories: async (page) => {
         try {
@@ -110,6 +113,39 @@ const TicketStore = create((set, get) => ({
             set({isLoading: false});
         }
     },
+
+     // Функция для загрузки тикета по ID
+loadTicketById: async (ticketId) => {
+    try {
+        set({ isLoading: true, error: null });
+        const response = await axios.get(`${API_URL}/api/tickets/${ticketId}`);
+        const ticket = response.data;
+        console.log(ticket);
+
+        // Получаем категории из состояния
+        const categories = get().categories; // Загружаем категории из состояния
+
+        // Создаем отображение категорий
+        const categoryMap = categories.reduce((acc, category) => {
+            acc[category.id] = category.name;
+            return acc;
+        }, {});
+
+        console.log(categoryMap)
+
+        // Получаем название категории
+        ticket.categoryName = categoryMap[ticket.category] || "Неизвестная категория";
+
+        // Устанавливаем тикет в состояние
+        set({ ticket, isLoading: false });
+    } catch (error) {
+        console.error("Ошибка при загрузке тикета: ", error.message);
+        set({ isLoading: false });
+    }
+},
+
+
+
     setPage: (newPage) => set(() => ({page: newPage})),
 }));
 

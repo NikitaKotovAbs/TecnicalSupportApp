@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from "zustand";
 
 // Хранилище для работы с категориями тикетов
 const TicketCategoryStore = create((set) => ({

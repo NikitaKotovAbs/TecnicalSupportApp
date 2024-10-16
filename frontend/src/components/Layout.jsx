@@ -1,12 +1,12 @@
 import {Link, useNavigate} from "react-router-dom";
-import React, { useState } from "react";
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'; // Импорт иконок
+import React, {useState} from "react";
+import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'; // Импорт иконок
 import logo from "../assets/logo.png";
 import AuthStore from '../data/AuthStore.js';
 
-export default function Layout({ children }) {
+export default function Layout({children}) {
     const navigate = useNavigate();
-    const { user, logout } = AuthStore();
+    const {user, logout} = AuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => {
@@ -20,7 +20,7 @@ export default function Layout({ children }) {
                 <div className="container mx-auto px-10 py-1 flex items-center justify-between">
                     {/* Логотип */}
                     <div>
-                        <img className="w-20 h-auto" src={logo} alt="logo" />
+                        <img className="w-20 h-auto" src={logo} alt="logo"/>
                     </div>
 
                     {/* Надпись Caty Support */}
@@ -45,7 +45,10 @@ export default function Layout({ children }) {
                                 <>
                                     <p className="text-gray-800">{user.username}</p>
                                     <button
-                                        onClick={logout}
+                                        onClick={() => {
+                                            logout(); // Вызываем функцию logout
+                                            navigate('/'); // Затем переходим на страницу тикетов
+                                        }}
                                         className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors duration-300"
                                     >
                                         Выйти
@@ -53,8 +56,10 @@ export default function Layout({ children }) {
                                 </>
                             ) : (
                                 <>
-                                    <Link to='/register' className="hover:text-blue-500 transition-colors duration-300">Регистрация</Link>
-                                    <Link to='/auth' className="hover:text-blue-500 transition-colors duration-300">Авторизация</Link>
+                                    <Link to='/register'
+                                          className="hover:text-blue-500 transition-colors duration-300">Регистрация</Link>
+                                    <Link to='/auth'
+                                          className="hover:text-blue-500 transition-colors duration-300">Авторизация</Link>
                                 </>
                             )}
                         </div>
@@ -62,22 +67,28 @@ export default function Layout({ children }) {
 
                     {/* Мобильная навигация */}
                     <div className="md:hidden">
-                        <button onClick={toggleMenu} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg flex items-center">
-                            <Bars3Icon className="w-6 h-6" />
+                        <button onClick={toggleMenu}
+                                className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg flex items-center">
+                            <Bars3Icon className="w-6 h-6"/>
                         </button>
                     </div>
                 </div>
 
                 {/* Бургер-меню с анимацией */}
-                <div className={`fixed top-0 left-0 right-0 bg-white shadow-lg z-50 transition-transform duration-300 ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+                <div
+                    className={`fixed top-0 left-0 right-0 bg-white shadow-lg z-50 transition-transform duration-300 ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
                     <div className="flex flex-col items-center py-4">
-                        <button onClick={toggleMenu} className="text-black font-bold py-2 px-4 rounded-lg mb-4 flex items-center">
-                            <XMarkIcon className="w-6 h-6" />
+                        <button onClick={toggleMenu}
+                                className="text-black font-bold py-2 px-4 rounded-lg mb-4 flex items-center">
+                            <XMarkIcon className="w-6 h-6"/>
                         </button>
-                        <Link to='/home' className="hover:text-blue-500 transition-colors duration-300 py-2">О нас</Link>
-                        <Link to='/Test' className="hover:text-blue-500 transition-colors duration-300 py-2">Команда</Link>
+                        <Link to='/home' className="hover:text-blue-500 transition-colors duration-300 py-2">О
+                            нас</Link>
+                        <Link to='/Test'
+                              className="hover:text-blue-500 transition-colors duration-300 py-2">Команда</Link>
                         <Link to='/' className="hover:text-blue-500 transition-colors duration-300 py-2">FAQ</Link>
-                        <button className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                        <button
+                            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300">
                             Задать вопрос
                         </button>
                         {user ? (
@@ -92,8 +103,10 @@ export default function Layout({ children }) {
                             </>
                         ) : (
                             <>
-                                <Link to='/register' className="hover:text-blue-500 transition-colors duration-300 py-2">Регистрация</Link>
-                                <Link to='/auth' className="hover:text-blue-500 transition-colors duration-300 py-2">Авторизация</Link>
+                                <Link to='/register'
+                                      className="hover:text-blue-500 transition-colors duration-300 py-2">Регистрация</Link>
+                                <Link to='/auth'
+                                      className="hover:text-blue-500 transition-colors duration-300 py-2">Авторизация</Link>
                             </>
                         )}
                     </div>
@@ -104,7 +117,7 @@ export default function Layout({ children }) {
             <main className="container mx-auto px-4 py-8">
                 {children}
             </main>
-            
+
         </>
     );
 }
