@@ -13,7 +13,7 @@ const CommentStore = create((set) => ({
 
 
     // Метод для получения комментариев с фильтрацией по тикету и автору
-    fetchComments: async (ticketId) => {
+    fetchComments: async (ticketId, currentUserId) => {
         set({isLoading: true});
         try {
             // Убедитесь, что пользователи загружены
@@ -57,16 +57,18 @@ const CommentStore = create((set) => ({
 
 
     // Метод для добавления комментария
-    addComment: async (ticketId, commentContent) => {
+    addComment: async (ticketId, commentContent, userId) => {
         try {
+            console.log("AAAAAAAAAAAAAAAAA", userId)
             const {token} = AuthStore.getState();
             if (!token) {
                 throw new Error("Пользователь не авторизован");
             }
 
             const response = await axios.post(`${API_URL}/api/comments/`, {
-                ticket: ticketId,
                 content: commentContent,
+                ticket: ticketId,
+                author: userId // Надо как-то сюда передать значение АВТОРА (пока что тут undefine)
             }, {
                 headers: {
                     'Authorization': `Bearer ${token}`,

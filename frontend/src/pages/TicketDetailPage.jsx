@@ -1,17 +1,21 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
 import TicketStore from "../data/TicketStore";
 import CommentStore from "../data/CommentStore";
 import Loader from "../components/Loader";
 
-export default function TicketDetailPage({ currentUserId }) { // Добавляем пропс для текущего пользователя
-    const { ticketId } = useParams();
-    const { ticket, loadTicketById, loadCategories, isLoading, categories } = TicketStore();
-    const { comments, fetchComments, addComment, isLoading: isCommentsLoading } = CommentStore();
+export default function TicketDetailPage({currentUserId}) { // Добавляем пропс для текущего пользователя
+    const {ticketId} = useParams();
+    const {ticket, loadTicketById, loadCategories, isLoading, categories} = TicketStore();
+    const {comments, fetchComments, addComment, isLoading: isCommentsLoading} = CommentStore();
     const [newComment, setNewComment] = useState("");
     const [error, setError] = useState(null); // Состояние для обработки ошибок
 
     useEffect(() => {
+        if (!currentUserId) {
+            console.error("ID текущего пользователя не задан");
+        }
+
         const fetchData = async () => {
             await loadCategories();
             if (ticketId) {
@@ -24,21 +28,26 @@ export default function TicketDetailPage({ currentUserId }) { // Добавля�
     }, [ticketId, loadTicketById, loadCategories, fetchComments, currentUserId, ticketId]);
 
     const handleAddComment = async () => {
+        console.log("Текущий пользователь:", currentUserId); // Логирование текущего пользователя
+
         if (newComment.trim()) {
             try {
-                await addComment(ticketId, newComment, currentUserId); // Используем ID текущего пользователя
-                setNewComment(""); // Сброс поля ввода после добавления комментария
-                setError(null); // Сбрасываем ошибки
+                await addComment(ticketId, newComment, currentUserId);
+                console.log("Номер тикета", ticketId);
+                console.log("Текст комментария", newComment);
+                console.log("Автор", currentUserId); // Убедитесь, что currentUserId не undefined
+                setNewComment("");
+                setError(null);
             } catch (error) {
-                setError("Ошибка при добавлении комментария. Пожалуйста, попробуйте снова."); // Устанавливаем сообщение об ошибке
+                setError("Ошибка при добавлении комментария. Пожалуйста, попробуйте снова.");
             }
         } else {
-            setError("Комментарий не может быть пустым."); // Если поле ввода пустое
+            setError("Комментарий не может быть пустым.");
         }
     };
 
     if (isLoading || isCommentsLoading) {
-        return <Loader />;
+        return <Loader/>;
     }
 
     if (!ticket) {
@@ -58,19 +67,22 @@ export default function TicketDetailPage({ currentUserId }) { // Добавля�
             <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 mb-6 animate-fade-in">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">Тикет: {ticket.title}</h1>
                 <p className="text-sm text-gray-500 mb-2">
-                    Статус: <span className={`text-${ticket.status === 'open' ? 'green-500' : ticket.status === 'in_progress' ? 'yellow-500' : 'red-500'}`}>
+                    Статус: <span
+                    className={`text-${ticket.status === 'open' ? 'green-500' : ticket.status === 'in_progress' ? 'yellow-500' : 'red-500'}`}>
                     {ticket.status === "open" ? "Открыт" :
-                     ticket.status === "in_progress" ? "В работе" : "Закрыт"}
+                        ticket.status === "in_progress" ? "В работе" : "Закрыт"}
                     </span>
                 </p>
                 <p className="text-sm text-gray-500 mb-2">
-                    Приоритет: <span className={`text-${ticket.priority === 'urgent' ? 'red-500' : ticket.priority === 'high' ? 'yellow-500' : 'gray-500'}`}>
+                    Приоритет: <span
+                    className={`text-${ticket.priority === 'urgent' ? 'red-500' : ticket.priority === 'high' ? 'yellow-500' : 'gray-500'}`}>
                     {ticket.priority === "urgent" ? "Срочный" :
-                     ticket.priority === "high" ? "Высокий" :
-                     ticket.priority === "medium" ? "Средний" : "Низкий"}
+                        ticket.priority === "high" ? "Высокий" :
+                            ticket.priority === "medium" ? "Средний" : "Низкий"}
                     </span>
                 </p>
-                <p className={`text-sm text-gray-500 mb-2`}>Категория: <span className="text-gray-600">{categoryName}</span></p>
+                <p className={`text-sm text-gray-500 mb-2`}>Категория: <span
+                    className="text-gray-600">{categoryName}</span></p>
                 <p className="text-sm text-gray-500">Создан: {new Date(ticket.created_at).toLocaleDateString("ru-RU")}</p>
             </div>
 
@@ -108,7 +120,8 @@ export default function TicketDetailPage({ currentUserId }) { // Добавля�
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                     />
-                    <button onClick={handleAddComment} className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 animate-pulse">
+                    <button onClick={handleAddComment}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 animate-pulse">
                         Отправить
                     </button>
                 </div>
