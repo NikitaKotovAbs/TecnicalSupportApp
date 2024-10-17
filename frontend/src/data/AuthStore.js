@@ -8,7 +8,8 @@ const loadUserFromLocalStorage = () => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
         const userData = JSON.parse(storedUser);
-        return {user: userData, token: userData.access};  // Возвращаем объект с пользователем и токеном
+        console.log("Данные пользователя LoadUserFoemLocalStorage", userData)
+        return {user: userData, token: userData.access,  userId: userData.user_id};  // Возвращаем объект с пользователем и токеном
     }
     return null;
 };
@@ -28,6 +29,7 @@ const AuthStore = create((set) => ({
     isLoading: false,
     error: null,
     token: loadUserFromLocalStorage()?.token || null,
+    userId: loadUserFromLocalStorage()?.userId || null,
 
     // Регистрация пользователя
     register: async (username, password) => {
@@ -57,8 +59,9 @@ const AuthStore = create((set) => ({
             const userData = response.data;
 
             // Сохраняем пользователя в состояние и localStorage
-            set({user: userData, isLoading: false, token: userData.access});
+            set({user: userData, isLoading: false, token: userData.access, userId: userData.user_id});
             saveUserToLocalStorage(userData);
+            console.log("Данные пользователя:", userData)
         } catch (error) {
             set({
                 error: error.response?.data?.message || 'Ошибка входа',

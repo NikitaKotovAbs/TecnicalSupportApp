@@ -3,7 +3,8 @@ import axios from "axios";
 import AuthStore from './AuthStore.js';
 
 // Получаем токен из AuthStore
-const {token} = AuthStore.getState();
+const {token, userId} = AuthStore.getState();
+console.log("Айди пользователя", userId)
 const API_URL = import.meta.env.VITE_API_URL
 import UserStore from "./UserStore.js";
 
@@ -57,12 +58,15 @@ const CommentStore = create((set) => ({
 
 
     // Метод для добавления комментария
-    addComment: async (ticketId, commentContent, userId) => {
+    addComment: async (ticketId, commentContent) => {
         try {
-            console.log("AAAAAAAAAAAAAAAAA", userId)
-            const {token} = AuthStore.getState();
-            if (!token) {
-                throw new Error("Пользователь не авторизован");
+            const {token, userId} = AuthStore.getState();
+            console.log("ID пользователя", userId)
+            console.log("Тикет", ticketId)
+            console.log("Комментарий", commentContent)
+            console.log("Токен", token)
+            if (!token || !userId) {
+                throw new Error("Пользователь не авторизован или userId не определен");
             }
 
             const response = await axios.post(`${API_URL}/api/comments/`, {

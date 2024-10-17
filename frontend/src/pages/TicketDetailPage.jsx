@@ -3,8 +3,10 @@ import {useParams} from "react-router-dom";
 import TicketStore from "../data/TicketStore";
 import CommentStore from "../data/CommentStore";
 import Loader from "../components/Loader";
-
-export default function TicketDetailPage({currentUserId}) { // Добавляем пропс для текущего пользователя
+import AuthStore from "../data/AuthStore";
+export default function TicketDetailPage() { // Добавляем пропс для текущего пользователя
+    const { user } = AuthStore.getState(); // Получаем пользователя из AuthStore
+    const currentUserId = user ? user.id : null; // Получаем текущий ID пользователя
     const {ticketId} = useParams();
     const {ticket, loadTicketById, loadCategories, isLoading, categories} = TicketStore();
     const {comments, fetchComments, addComment, isLoading: isCommentsLoading} = CommentStore();
@@ -12,10 +14,6 @@ export default function TicketDetailPage({currentUserId}) { // Добавляе�
     const [error, setError] = useState(null); // Состояние для обработки ошибок
 
     useEffect(() => {
-        if (!currentUserId) {
-            console.error("ID текущего пользователя не задан");
-        }
-
         const fetchData = async () => {
             await loadCategories();
             if (ticketId) {
@@ -25,17 +23,18 @@ export default function TicketDetailPage({currentUserId}) { // Добавляе�
         };
 
         fetchData();
-    }, [ticketId, loadTicketById, loadCategories, fetchComments, currentUserId, ticketId]);
+    }, [ticketId, loadTicketById, loadCategories, fetchComments, currentUserId]);
 
     const handleAddComment = async () => {
-        console.log("Текущий пользователь:", currentUserId); // Логирование текущего пользователя
 
         if (newComment.trim()) {
             try {
-                await addComment(ticketId, newComment, currentUserId);
-                console.log("Номер тикета", ticketId);
-                console.log("Текст комментария", newComment);
-                console.log("Автор", currentUserId); // Убедитесь, что currentUserId не undefined
+
+                if (!currentUserId) {
+                    Error("ID пользователя не определен");
+                }
+
+                await addComment(ticketId, newComment);
                 setNewComment("");
                 setError(null);
             } catch (error) {
@@ -45,9 +44,8 @@ export default function TicketDetailPage({currentUserId}) { // Добавляе�
             setError("Комментарий не может быть пустым.");
         }
     };
-
     if (isLoading || isCommentsLoading) {
-        return <Loader/>;
+        return <Loader />;
     }
 
     if (!ticket) {
