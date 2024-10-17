@@ -1,15 +1,15 @@
-import React, {useEffect} from 'react';
-import {useForm} from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import AuthStore from '../data/AuthStore.js';
-import {useNavigate, useLocation} from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const AuthPage = () => {
     const navigate = useNavigate();
-    const location = useLocation(); // Получаем объект location
-    const {register, handleSubmit, formState: {errors}} = useForm();
-    const {login, isLoading, error, user} = AuthStore();
+    const location = useLocation();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { login, isLoading, error, user } = AuthStore();
 
-    const from = location.state?.from || "/"; // Берем путь откуда пришел пользователь, если нет - на главную
+    const from = location.state?.from || "/";
 
     const onSubmit = async (data) => {
         await login(data.username, data.password);
@@ -17,7 +17,7 @@ const AuthPage = () => {
 
     useEffect(() => {
         if (user) {
-            navigate(from); // Перенаправляем обратно, если авторизовался
+            navigate(from);
         }
     }, [user, navigate, from]);
 
@@ -40,7 +40,7 @@ const AuthPage = () => {
                         placeholder="Введите логин"
                         {...register('username', {
                             required: 'Введите логин',
-                            minLength: {value: 3, message: 'Логин должен быть минимум 3 символа'}
+                            minLength: { value: 3, message: 'Логин должен быть минимум 3 символа' }
                         })}
                         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                     />
@@ -58,7 +58,7 @@ const AuthPage = () => {
                         placeholder="Введите пароль"
                         {...register('password', {
                             required: 'Введите пароль',
-                            minLength: {value: 6, message: 'Пароль должен быть минимум 6 символов'}
+                            minLength: { value: 6, message: 'Пароль должен быть минимум 6 символов' }
                         })}
                         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                     />
@@ -73,6 +73,12 @@ const AuthPage = () => {
                 >
                     {isLoading ? 'Загрузка...' : 'Войти'}
                 </button>
+                {/* Добавляем ссылку на регистрацию */}
+                <div className="text-center mt-4">
+                    <p className="text-gray-600">
+                        Нет аккаунта? <Link to="/register" className="text-blue-500 hover:underline">Зарегистрироваться</Link>
+                    </p>
+                </div>
             </form>
         </div>
     );

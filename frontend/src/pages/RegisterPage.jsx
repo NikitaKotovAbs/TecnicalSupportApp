@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import AuthStore from '../data/AuthStore.js';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -73,6 +73,13 @@ const RegisterPage = () => {
         >
           {isLoading ? 'Загрузка...' : 'Зарегистрироваться'}
         </button>
+
+        {/* Добавляем ссылку на авторизацию */}
+        <div className="text-center mt-4">
+          <p className="text-gray-600">
+            Уже есть аккаунт? <Link to="/auth" className="text-blue-500 hover:underline">Авторизоваться</Link>
+          </p>
+        </div>
       </form>
 
       {/* Модальное окно для успешной регистрации */}
