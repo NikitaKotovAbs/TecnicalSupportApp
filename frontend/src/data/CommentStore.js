@@ -32,7 +32,7 @@ const CommentStore = create((set) => ({
 
             const filteredComments = allComments.filter(comment => {
                 console.log(`Сравниваем ticketId: ${ticketId} с comment.ticket: ${comment.ticket}`);
-                return comment.ticket === Number(ticketId);
+                return Number(comment.ticket) === Number(ticketId);
             });
 
             console.log("Данные пользователей перед фильтрацией:", users);
@@ -42,7 +42,7 @@ const CommentStore = create((set) => ({
                 console.log("ИДЕНТИФИКАТОР ПОЛЬЗОВАТЕЛЯ:", authorName)
                 return {
                     ...comment,
-                    authorName: authorName ? authorName : "Неизвестный автор",
+                    authorName: authorName ? authorName : "Администрация",
                 };
             });
 

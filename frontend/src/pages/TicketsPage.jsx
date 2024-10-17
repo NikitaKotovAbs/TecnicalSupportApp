@@ -8,21 +8,20 @@ import CreateTicketForm from "../components/CreateTicketForm.jsx";
 
 export default function TicketsPage({}) {
     const {tickets, loadTicketsWithCategories, isLoading, page, totalPages} = TicketStore();
-    const {user} = AuthStore();
+    const {user, role} = AuthStore();
     const navigate = useNavigate();
 
     // Фильтры
     const [statusFilter, setStatusFilter] = useState("all");
     const [categoryFilter, setCategoryFilter] = useState("all");
 
-    // Фильтруем тикеты только по текущему пользователю
-    const userTickets = tickets.filter(ticket => ticket.created_by === user?.user_id);
-
     // Применяем фильтры к тикетам
-    const filteredTickets = userTickets.filter(ticket => {
+    const filteredTickets = tickets.filter(ticket => {
+        // Для роли "user" — фильтруем только тикеты, созданные текущим пользователем
+        const isUserTicket = role === "user" ? ticket.created_by === user?.user_id : true;
         const statusMatch = statusFilter === "all" || ticket.status === statusFilter;
         const categoryMatch = categoryFilter === "all" || ticket.categoryName === categoryFilter;
-        return statusMatch && categoryMatch;
+        return isUserTicket && statusMatch && categoryMatch;
     });
 
     const handlePageChange = (newPage) => {
@@ -41,7 +40,9 @@ export default function TicketsPage({}) {
 
     return (
         <div className="container mx-auto mt-28 px-4">
-            <h1 className="text-3xl font-bold mb-8 text-center">Мои Тикеты</h1>
+            <h1 className="text-3xl font-bold mb-8 text-center">
+                {role === "support" ? "Все Тикеты" : "Мои Тикеты"}
+            </h1>
 
             {/* Фильтры */}
             <div className="flex justify-between mb-4">
@@ -62,16 +63,16 @@ export default function TicketsPage({}) {
                     className="border p-2 rounded"
                 >
                     <option value="all">Все категории</option>
-                    {/* Здесь добавьте ваши категории, например: */}
                     <option value="Технические ошибки">Технические ошибки</option>
                     <option value="Установка и настройка">Установка и настройка</option>
-                    {/* Добавьте другие категории по мере необходимости */}
                 </select>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-10">
                 <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-semibold mb-6 text-center">Ваши Тикеты</h2>
+                    <h2 className="text-2xl font-semibold mb-6 text-center">
+                        {role === "support" ? "Тикеты пользователей" : "Ваши Тикеты"}
+                    </h2>
                     <div className="flex flex-col items-center gap-y-5">
                         {!user ? (
                             <div className="text-center mt-20">
@@ -84,7 +85,7 @@ export default function TicketsPage({}) {
                                 </button>
                             </div>
                         ) : isLoading ? (
-                            <Loader/>
+                            <Loader />
                         ) : filteredTickets.length > 0 ? (
                             filteredTickets.map(ticket => (
                                 <TicketBlock
@@ -98,39 +99,19 @@ export default function TicketsPage({}) {
                                 />
                             ))
                         ) : (
-                            <p className="mt-20 text-center">У вас нет тикетов.</p>
+                            <p className="mt-20 text-center">
+                                {role === "support" ? "Нет тикетов пользователей." : "У вас нет тикетов."}
+                            </p>
                         )}
                     </div>
-
-                    {/*/!* Пагинация *!/*/}
-                    {/*{filteredTickets.length > 0 && (*/}
-                    {/*    // Кнопки пагинации с проверкой на доступность*/}
-                    {/*    <div className="flex justify-center mt-4">*/}
-                    {/*        <button*/}
-                    {/*            onClick={() => handlePageChange(page - 1)}*/}
-                    {/*            disabled={page === 1}*/}
-                    {/*            className={`px-4 py-2 ${page === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-lg`}*/}
-                    {/*        >*/}
-                    {/*            Назад*/}
-                    {/*        </button>*/}
-                    {/*        <span className="mx-4 text-lg">{page} из {totalPages}</span>*/}
-                    {/*        <button*/}
-                    {/*            onClick={() => handlePageChange(page + 1)}*/}
-                    {/*            disabled={page === totalPages}*/}
-                    {/*            className={`px-4 py-2 ${page === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-lg`}*/}
-                    {/*        >*/}
-                    {/*            Вперед*/}
-                    {/*        </button>*/}
-                    {/*    </div>*/}
-                    {/*)}*/}
                 </div>
 
-                {/* Блок с формой создания тикета */}
-                {user ? (
+                {/* Блок с формой создания тикета для пользователя */}
+                {role === "user" && (
                     <div className="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-lg">
-                        <CreateTicketForm/>
+                        <CreateTicketForm />
                     </div>
-                ) : null}
+                )}
             </div>
         </div>
     );

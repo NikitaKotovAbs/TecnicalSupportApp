@@ -9,7 +9,7 @@ const loadUserFromLocalStorage = () => {
     if (storedUser) {
         const userData = JSON.parse(storedUser);
         console.log("Данные пользователя LoadUserFoemLocalStorage", userData)
-        return {user: userData, token: userData.access,  userId: userData.user_id};  // Возвращаем объект с пользователем и токеном
+        return {user: userData, token: userData.access, userId: userData.user_id, role: userData.groups};  // Возвращаем объект с пользователем и токеном
     }
     return null;
 };
@@ -25,28 +25,27 @@ const removeUserFromLocalStorage = () => {
 };
 
 const AuthStore = create((set) => ({
-    user: loadUserFromLocalStorage()?.user || null,
+    user: loadUserFromLocalStorage()?.user || console.log("Пользователь не был загружен"),
     isLoading: false,
     error: null,
-    token: loadUserFromLocalStorage()?.token || null,
-    userId: loadUserFromLocalStorage()?.userId || null,
+    token: loadUserFromLocalStorage()?.token || console.log("Токен не был загружен"),
+    userId: loadUserFromLocalStorage()?.userId || console.log("Id пользователя не был загружен"),
+    role: loadUserFromLocalStorage()?.role || console.log("Роль не была загружена"),
 
     // Регистрация пользователя
     register: async (username, password) => {
         set({isLoading: true, error: null});
-
         try {
             const response = await axios.post(`${API_URL}/api/register/`, {username, password});
             const userData = response.data;
-
-            // Сохраняем пользователя в состояние и localStorage
-            set({user: userData, isLoading: false, token: userData.access});
-            saveUserToLocalStorage(userData);
+            set({isLoading: false});
+            return true; // Успешная регистрация
         } catch (error) {
             set({
                 error: error.response?.data?.message || 'Ошибка регистрации',
                 isLoading: false,
             });
+            return false; // Ошибка регистрации
         }
     },
 
@@ -59,7 +58,13 @@ const AuthStore = create((set) => ({
             const userData = response.data;
 
             // Сохраняем пользователя в состояние и localStorage
-            set({user: userData, isLoading: false, token: userData.access, userId: userData.user_id});
+            set({
+                user: userData,
+                isLoading: false,
+                token: userData.access,
+                userId: userData.user_id,
+                role: userData.groups
+            });
             saveUserToLocalStorage(userData);
             console.log("Данные пользователя:", userData)
         } catch (error) {

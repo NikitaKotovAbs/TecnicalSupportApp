@@ -18,13 +18,16 @@ class LoginSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError("Неверные учетные данные")
 
+        group = user.groups.values_list('name', flat=True).first()  # Возвращаем список имен групп
+
         # Генерация JWT токенов для пользователя
         refresh = RefreshToken.for_user(user)
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'user_id': user.id,
-            'username': user.username
+            'username': user.username,
+            'groups': group if group else "user"  # Преобразуем QuerySet в список
         }
 
 

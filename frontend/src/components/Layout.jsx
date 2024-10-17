@@ -6,7 +6,7 @@ import AuthStore from '../data/AuthStore.js';
 
 export default function Layout({children}) {
     const navigate = useNavigate();
-    const {user, logout} = AuthStore();
+    const {user, role, logout} = AuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => {
@@ -33,12 +33,23 @@ export default function Layout({children}) {
                         <Link to='/home' className="hover:text-blue-500 transition-colors duration-300">О нас</Link>
                         <Link to='/Test' className="hover:text-blue-500 transition-colors duration-300">Команда</Link>
                         <Link to='/' className="hover:text-blue-500 transition-colors duration-300">FAQ</Link>
-                        <button
-                            onClick={() => navigate('/tickets')}
-                            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                        >
+                        {role === "support" ? (
+                            <button
+                                onClick={() => navigate('/tickets')}
+                                className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                            >
+                                Все тикеты
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => navigate('/tickets')}
+                                className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                            >
                             Задать вопрос
-                        </button>
+                            </button>
+                        )
+                        }
+
 
                         <div className="flex items-center space-x-4">
                             {user ? (
