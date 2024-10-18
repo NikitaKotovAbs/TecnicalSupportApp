@@ -4,21 +4,25 @@ import TicketStore from "../data/TicketStore";
 import CommentStore from "../data/CommentStore";
 import Loader from "../components/Loader";
 import AuthStore from "../data/AuthStore";
-export default function TicketDetailPage() { // Добавляем пропс для текущего пользователя
-    const { user } = AuthStore.getState(); // Получаем пользователя из AuthStore
-    const currentUserId = user ? user.id : null; // Получаем текущий ID пользователя
+import {useNavigate} from "react-router-dom";
+
+export default function TicketDetailPage() {
+    const {user, role} = AuthStore.getState();
+    const currentUserId = user ? user.id : null;
     const {ticketId} = useParams();
-    const {ticket, loadTicketById, loadCategories, isLoading, categories} = TicketStore();
+    const navigate = useNavigate();
+    const {ticket, loadTicketById, loadCategories, isLoading, categories, updateTicketStatus} = TicketStore();
     const {comments, fetchComments, addComment, isLoading: isCommentsLoading} = CommentStore();
     const [newComment, setNewComment] = useState("");
-    const [error, setError] = useState(null); // Состояние для обработки ошибок
+    const [error, setError] = useState(null);
+    const [showConfirm, setShowConfirm] = useState(false); // Для подтверждения закрытия
 
     useEffect(() => {
         const fetchData = async () => {
             await loadCategories();
             if (ticketId) {
                 await loadTicketById(ticketId);
-                await fetchComments(ticketId, currentUserId); // Передаем ID текущего пользователя
+                await fetchComments(ticketId, currentUserId);
             }
         };
 
@@ -26,10 +30,8 @@ export default function TicketDetailPage() { // Добавляем пропс д
     }, [ticketId, loadTicketById, loadCategories, fetchComments, currentUserId]);
 
     const handleAddComment = async () => {
-
         if (newComment.trim()) {
             try {
-
                 if (!currentUserId) {
                     Error("ID пользователя не определен");
                 }
@@ -44,8 +46,20 @@ export default function TicketDetailPage() { // Добавляем пропс д
             setError("Комментарий не может быть пустым.");
         }
     };
+
+    const closeTicket = async () => {
+        try {
+            await updateTicketStatus(ticketId, {status: "closed"});
+            setShowConfirm(false); // Скрываем предупреждение
+            navigate(`/tickets`);
+
+        } catch (error) {
+            console.error("Ошибка при закрытии тикета:", error);
+        }
+    };
+
     if (isLoading || isCommentsLoading) {
-        return <Loader />;
+        return <Loader/>;
     }
 
     if (!ticket) {
@@ -61,7 +75,6 @@ export default function TicketDetailPage() { // Добавляем пропс д
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-            {/* Ticket Header */}
             <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 mb-6 animate-fade-in">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">Тикет: {ticket.title}</h1>
                 <p className="text-sm text-gray-500 mb-2">
@@ -82,9 +95,24 @@ export default function TicketDetailPage() { // Добавляем пропс д
                 <p className={`text-sm text-gray-500 mb-2`}>Категория: <span
                     className="text-gray-600">{categoryName}</span></p>
                 <p className="text-sm text-gray-500">Создан: {new Date(ticket.created_at).toLocaleDateString("ru-RU")}</p>
+
+                {/* Кнопка закрытия тикета для пользователя поддержки */}
+
+                {user && role === 'support' && ticket.status === 'in_progress' && (
+                    <div className="flex justify-end">
+                        <button
+                            onClick={() => setShowConfirm(true)}
+                            className="transition-all duration-300 ease-in-out transform hover:scale-105 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-lg shadow-lg hover:shadow-xl hover:from-red-600 hover:to-red-700 focus:outline-none"
+
+                        >
+                            Закрыть тикет
+                        </button>
+                    </div>
+                )}
+
+
             </div>
 
-            {/* Ticket Description */}
             <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 mb-6 animate-fade-in">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Описание тикета</h2>
                 <p className="text-gray-600 leading-relaxed">
@@ -92,16 +120,13 @@ export default function TicketDetailPage() { // Добавляем пропс д
                 </p>
             </div>
 
-            {/* Comments Section */}
             <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 animate-slide-in-bottom mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Комментарии</h2>
-
-                {/* Messages */}
                 <div className="mb-4 space-y-4">
                     {comments.map((comment) => (
                         <div key={comment.id} className="flex">
                             <div className="bg-gray-100 text-gray-800 p-4 rounded-lg shadow-lg max-w-md">
-                                <p className="font-semibold">Отправитель {comment.authorName}:</p> {/* Можно заменить на имя пользователя */}
+                                <p className="font-semibold">Отправитель {comment.authorName}:</p>
                                 <p>{comment.content}</p>
                                 <p className="text-sm text-gray-500">{new Date(comment.created_at).toLocaleDateString("ru-RU")}</p>
                             </div>
@@ -109,21 +134,52 @@ export default function TicketDetailPage() { // Добавляем пропс д
                     ))}
                 </div>
 
-                {/* Input for new comment */}
                 <div className="flex items-center space-x-4">
                     <input
                         type="text"
-                        className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Напишите комментарий..."
+                        className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none ${
+                            ticket.status === "closed" ? "bg-gray-200 cursor-not-allowed" : "focus:ring-2 focus:ring-blue-500"
+                        }`}
+                        placeholder={ticket.status === "closed" ? "Тикет закрыт, комментарии недоступны" : "Напишите комментарий..."}
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
+                        disabled={ticket.status === "closed"} // Блокируем поле если тикет закрыт
                     />
-                    <button onClick={handleAddComment}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-blue-600 animate-pulse">
+                    <button
+                        onClick={handleAddComment}
+                        className={`px-4 py-2 rounded-lg shadow-lg animate-pulse ${
+                            ticket.status === "closed" ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+                        }`}
+                        disabled={ticket.status === "closed"} // Блокируем кнопку если тикет закрыт
+                    >
                         Отправить
                     </button>
                 </div>
             </div>
+
+
+            {/* Диалог подтверждения закрытия тикета */}
+            {showConfirm && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <p className="text-gray-800 mb-4">Вы точно хотите закрыть тикет?</p>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={closeTicket}
+                                className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-red-600 mr-2"
+                            >
+                                Да
+                            </button>
+                            <button
+                                onClick={() => setShowConfirm(false)}
+                                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow-lg hover:bg-gray-400"
+                            >
+                                Отмена
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -62,7 +62,7 @@ class TicketCategoryViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    http_method_names = ['get', 'post', 'put', 'delete', 'head']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head']
     pagination_class = CustomPagination
     # Направление сортировки: 'asc' для по возрастанию, '-desc' для по убыванию
     ordering_fields = ['id', 'name', 'is_deleted']
@@ -73,7 +73,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    http_method_names = ['get', 'post', 'put', 'delete', 'head']
+    http_method_names = ['get', 'post', 'patch', 'put', 'delete', 'head']
     pagination_class = CustomPagination
     # Направление сортировки: 'asc' для по возрастанию, '-desc' для по убыванию
     ordering_fields = ['id', 'name', 'is_deleted']

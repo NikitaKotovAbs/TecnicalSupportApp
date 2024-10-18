@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
 import CreateTicketForm from "../components/CreateTicketForm.jsx";
 
 export default function TicketsPage({}) {
-    const {tickets, loadTicketsWithCategories, isLoading, page, totalPages} = TicketStore();
+    const {tickets, loadTicketsWithCategories, isLoading, page, totalPages, updateTicketStatus} = TicketStore();
     const {user, role} = AuthStore();
     const navigate = useNavigate();
 

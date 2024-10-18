@@ -1,5 +1,6 @@
 import {create} from "zustand";
 import axios from "axios";
+import AuthStore from "./AuthStore.js";
 
 // URL для API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -69,7 +70,24 @@ const TicketStore = create((set, get) => ({
         }
     },
 
-
+    // Метод для обновления статуса тикета
+    updateTicketStatus: async (ticketId, data) => {
+        const {token} = AuthStore.getState();
+        try {
+            const response = await axios.patch(
+                `${API_URL}/api/tickets/${ticketId}/`,
+                data,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Ошибка обновления тикета:", error);
+        }
+    },
 
 // Функция загрузки тикетов и категорий с API
     loadTicketsWithCategories: async (page) => {
@@ -114,36 +132,35 @@ const TicketStore = create((set, get) => ({
         }
     },
 
-     // Функция для загрузки тикета по ID
-loadTicketById: async (ticketId) => {
-    try {
-        set({ isLoading: true, error: null });
-        const response = await axios.get(`${API_URL}/api/tickets/${ticketId}`);
-        const ticket = response.data;
-        console.log(ticket);
+    // Функция для загрузки тикета по ID
+    loadTicketById: async (ticketId) => {
+        try {
+            set({isLoading: true, error: null});
+            const response = await axios.get(`${API_URL}/api/tickets/${ticketId}`);
+            const ticket = response.data;
+            console.log(ticket);
 
-        // Получаем категории из состояния
-        const categories = get().categories; // Загружаем категории из состояния
+            // Получаем категории из состояния
+            const categories = get().categories; // Загружаем категории из состояния
 
-        // Создаем отображение категорий
-        const categoryMap = categories.reduce((acc, category) => {
-            acc[category.id] = category.name;
-            return acc;
-        }, {});
+            // Создаем отображение категорий
+            const categoryMap = categories.reduce((acc, category) => {
+                acc[category.id] = category.name;
+                return acc;
+            }, {});
 
-        console.log(categoryMap)
+            console.log(categoryMap)
 
-        // Получаем название категории
-        ticket.categoryName = categoryMap[ticket.category] || "Неизвестная категория";
+            // Получаем название категории
+            ticket.categoryName = categoryMap[ticket.category] || "Неизвестная категория";
 
-        // Устанавливаем тикет в состояние
-        set({ ticket, isLoading: false });
-    } catch (error) {
-        console.error("Ошибка при загрузке тикета: ", error.message);
-        set({ isLoading: false });
-    }
-},
-
+            // Устанавливаем тикет в состояние
+            set({ticket, isLoading: false});
+        } catch (error) {
+            console.error("Ошибка при загрузке тикета: ", error.message);
+            set({isLoading: false});
+        }
+    },
 
 
     setPage: (newPage) => set(() => ({page: newPage})),

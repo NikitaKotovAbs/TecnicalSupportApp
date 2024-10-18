@@ -19,9 +19,9 @@ export default function Layout({children}) {
             <header className="bg-white shadow-md fixed w-full z-10">
                 <div className="container mx-auto px-10 py-1 flex items-center justify-between">
                     {/* Логотип */}
-                    <div>
-                        <img className="w-20 h-auto" src={logo} alt="logo"/>
-                    </div>
+                    <Link to="/">
+                        <img className="w-20 h-auto cursor-pointer" src={logo} alt="logo"/>
+                    </Link>
 
                     {/* Надпись Caty Support */}
                     <div className="text-xl font-semibold text-gray-800 mx-4">
@@ -45,7 +45,7 @@ export default function Layout({children}) {
                                 onClick={() => navigate('/tickets')}
                                 className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
                             >
-                            Задать вопрос
+                                Задать вопрос
                             </button>
                         )
                         }
