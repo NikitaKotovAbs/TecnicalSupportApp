@@ -1,4 +1,8 @@
+import random
+
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
 from django.shortcuts import render
 from rest_framework import viewsets, filters, status, generics
 from rest_framework.decorators import api_view
@@ -20,17 +24,52 @@ from .serializer import *
 def register(request):
     username = request.data.get('username')
     password = request.data.get('password')
-
-    if username and password:
+    email = request.data.get('email')
+    if username and password and email:
         try:
             user = User.objects.create(
                 username=username,
-                password=make_password(password)  # Хэшируем пароль
+                password=make_password(password), # Хэшируем пароль
+                email=email,
+                is_active=False
             )
+            # Генерация и сохранение кода подтверждения
+            verification_code = random.randint(100000, 999999)
+            print("Сгенерированный код", verification_code)
+            VerificationCode.objects.create(user=user, code=verification_code)
+
+            # Отправка письма с кодом подтверждения
+            send_mail(
+                'Подтверждение регистрации',
+                f'Ваш код подтверждения: {verification_code}',
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+
             return Response({"id": user.id, "username": user.username}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    return Response({"message": "Необходимо указать логин и пароль"}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message": "Необходимо указать логин, пароль и email"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def verify_code(request):
+    user_id = request.data.get('user_id')
+    code = request.data.get('code')
+
+    print(user_id, code)
+
+    try:
+        verification = VerificationCode.objects.get(user_id=user_id, code=code)
+        user = verification.user
+        user.is_active = True  # Активируем пользователя после успешной валидации кода
+        user.save()
+        verification.delete()  # Удаляем код после успешного подтверждения
+        return Response({"message": "Пользователь успешно подтвержден"}, status=status.HTTP_200_OK)
+    except VerificationCode.DoesNotExist:
+        return Response({"message": "Неверный код подтверждения"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class LoginView(APIView):

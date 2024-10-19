@@ -54,6 +54,16 @@ REST_FRAMEWORK = {
 
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'catyservice@mail.ru'
+EMAIL_HOST_PASSWORD = 'R5WTuEevhWc3JwWTBehe'
+DEFAULT_FROM_EMAIL = 'catyservice@mail.ru'
+
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),

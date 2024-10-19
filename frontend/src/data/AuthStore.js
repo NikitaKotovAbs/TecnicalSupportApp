@@ -87,13 +87,15 @@ const AuthStore = create((set) => {
         role: loadUserFromLocalStorage()?.role || console.log("Роль не была загружена"),
 
         // Регистрация пользователя
-        register: async (username, password) => {
+        register: async (username, password, email) => {
             set({ isLoading: true, error: null });
             try {
-                const response = await axios.post(`${API_URL}/api/register/`, { username, password });
+                const response = await axios.post(`${API_URL}/api/register/`, { username, password, email });
                 const userData = response.data;
+                console.log("Response:", response)
+                console.log("UserDATA:", userData)
                 set({ isLoading: false });
-                return true; // Успешная регистрация
+                return userData;
             } catch (error) {
                 set({
                     error: error.response?.data?.message || 'Ошибка регистрации',
