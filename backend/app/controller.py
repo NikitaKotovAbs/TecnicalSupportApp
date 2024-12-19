@@ -1,7 +1,13 @@
 import random
-
+import subprocess
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
+import subprocess
+import os
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.shortcuts import render
 from rest_framework import viewsets, filters, status, generics
@@ -29,7 +35,7 @@ def register(request):
         try:
             user = User.objects.create(
                 username=username,
-                password=make_password(password), # Хэшируем пароль
+                password=make_password(password),  # Хэшируем пароль
                 email=email,
                 is_active=False
             )
@@ -58,17 +64,56 @@ def verify_code(request):
     user_id = request.data.get('user_id')
     code = request.data.get('code')
 
-    print(user_id, code)
-
     try:
         verification = VerificationCode.objects.get(user_id=user_id, code=code)
         user = verification.user
         user.is_active = True  # Активируем пользователя после успешной валидации кода
         user.save()
         verification.delete()  # Удаляем код после успешного подтверждения
-        return Response({"message": "Пользователь успешно подтвержден"}, status=status.HTTP_200_OK)
+
+        # Генерация токена доступа после успешной верификации
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "message": "Пользователь успешно подтвержден",
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "user_id": user.id
+        }, status=status.HTTP_200_OK)
+
     except VerificationCode.DoesNotExist:
         return Response({"message": "Неверный код подтверждения"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def get_logs(request):
+    log_file_path = os.path.join(settings.BASE_DIR, 'logs', 'api_requests.log')
+
+    if not os.path.exists(log_file_path):
+        return JsonResponse({'status': 'error', 'message': 'Лог-файл не найден'})
+
+    try:
+        with open(log_file_path, 'r') as log_file:
+            logs = log_file.readlines()[-10:]  # Получаем последние 10 записей лога
+        return JsonResponse({'status': 'success', 'logs': logs})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+@csrf_exempt
+def backup_database(request):
+    try:
+        # Путь для бэкапа
+        backup_dir = "../backups"
+        os.makedirs(backup_dir, exist_ok=True)  # Создаст папку, если она не существует
+        backup_file = os.path.join(backup_dir, "backup.sql")
+
+        # Выполнение команды pg_dump для бэкапа базы данных
+        command = f"pg_dump -U postgres -h localhost -p 5432 technicalsupport > {backup_file}"
+        subprocess.run(command, shell=True, check=True)
+        return JsonResponse({"status": "success", "message": "Бэкап выполнен успешно!"})
+    except subprocess.CalledProcessError as e:
+        # Логирование ошибки
+        error_message = f"Ошибка выполнения бэкапа: {str(e)}"
+        print(error_message)  # Печать в консоль сервера
+        return JsonResponse({"status": "error", "message": error_message})
 
 
 

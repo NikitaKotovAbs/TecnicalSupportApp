@@ -17,10 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from app.controller import TicketViewSet, TicketCategoryViewSet, ProtectedEndpointView, CommentViewSet, UserViewSet, register, verify_code
+from app.controller import TicketViewSet, TicketCategoryViewSet, ProtectedEndpointView, CommentViewSet, UserViewSet, \
+    register, verify_code, backup_database, get_logs
 from app.controller import LoginView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 router = routers.DefaultRouter()
 router.register('tickets', TicketViewSet)
 router.register('categories', TicketCategoryViewSet)
@@ -35,5 +35,7 @@ urlpatterns = [
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('backup-database/', backup_database, name='backup_database'),
+    path('get-logs/', get_logs, name='get_logs'),
     path('api/protected/', ProtectedEndpointView.as_view(), name='protected_endpoint'),  # защищенный эндпоинт
 ]
