@@ -7,10 +7,18 @@ import {useNavigate} from "react-router-dom";
 import CreateTicketForm from "../components/CreateTicketForm.jsx";
 
 export default function TicketsPage({}) {
-    const {tickets, loadTicketsWithCategories, isLoading, page, totalPages, updateTicketStatus} = TicketStore();
+    const {
+        tickets,
+        loadTicketsWithCategories,
+        isLoading,
+        page,
+        totalPages,
+        updateTicketStatus,
+        loadCategories
+    } = TicketStore();
     const {user, role} = AuthStore();
     const navigate = useNavigate();
-
+    const [pagination, setPagination] = useState({next: null, previous: null});
     // Фильтры
     const [statusFilter, setStatusFilter] = useState("all");
     const [categoryFilter, setCategoryFilter] = useState("all");
@@ -25,18 +33,16 @@ export default function TicketsPage({}) {
     });
 
     const handlePageChange = (newPage) => {
-        const {totalPages} = TicketStore.getState(); // Получаем общее количество страниц
-
-        // Не позволяем переходить на страницы за пределами диапазона
-        if (newPage > 0 && newPage <= totalPages) {
+        if (newPage >= 1 && newPage <= totalPages) {
             TicketStore.getState().setPage(newPage);
-            TicketStore.getState().loadTicketsWithCategories(newPage);
+            loadTicketsWithCategories(newPage);
         }
     };
 
     useEffect(() => {
-        loadTicketsWithCategories(page);
-    }, [page]);
+        loadTicketsWithCategories(1); // Загружаем первую страницу
+    }, [statusFilter, categoryFilter]);
+
 
     return (
         <div className="container mx-auto mt-28 px-4">
@@ -85,12 +91,12 @@ export default function TicketsPage({}) {
                                 </button>
                             </div>
                         ) : isLoading ? (
-                            <Loader />
+                            <Loader/>
                         ) : filteredTickets.length > 0 ? (
                             filteredTickets.map(ticket => (
                                 <TicketBlock
                                     key={ticket.id}
-                                    id={ticket.id}  // Передаем ID тикета
+                                    id={ticket.id}
                                     title={ticket.title}
                                     description={ticket.description}
                                     status={ticket.status}
@@ -104,12 +110,53 @@ export default function TicketsPage({}) {
                             </p>
                         )}
                     </div>
+
+                    {/* Кнопки пагинации */}
+                    <div className="pagination flex justify-center items-center mt-6 gap-2">
+                        <button
+                            className={`px-4 py-2 border rounded-l-lg transition duration-300 ${
+                                page === 1
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-blue-500 text-white hover:bg-blue-600"
+                            }`}
+                            onClick={() => handlePageChange(page - 1)}
+                            disabled={page === 1}
+                        >
+                            Назад
+                        </button>
+                        <div className="flex items-center gap-2">
+                            {Array.from({length: totalPages}, (_, i) => i + 1).map((pageNumber) => (
+                                <button
+                                    key={pageNumber}
+                                    className={`px-3 py-2 rounded-lg border transition duration-300 ${
+                                        page === pageNumber
+                                            ? "bg-blue-500 text-white font-bold"
+                                            : "bg-white text-gray-600 hover:bg-blue-100 hover:text-blue-600"
+                                    }`}
+                                    onClick={() => handlePageChange(pageNumber)}
+                                >
+                                    {pageNumber}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            className={`px-4 py-2 border rounded-r-lg transition duration-300 ${
+                                page === totalPages
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-blue-500 text-white hover:bg-blue-600"
+                            }`}
+                            onClick={() => handlePageChange(page + 1)}
+                            disabled={page === totalPages}
+                        >
+                            Вперед
+                        </button>
+                    </div>
                 </div>
 
                 {/* Блок с формой создания тикета для пользователя */}
                 {role === "user" && (
                     <div className="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-lg">
-                        <CreateTicketForm />
+                        <CreateTicketForm/>
                     </div>
                 )}
             </div>

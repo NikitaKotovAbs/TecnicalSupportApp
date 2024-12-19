@@ -1,6 +1,7 @@
 import {create} from "zustand";
 import axios from "axios";
 import AuthStore from "./AuthStore.js";
+import {useState} from "react";
 
 // URL для API
 const API_URL = import.meta.env.VITE_API_URL;
@@ -64,11 +65,13 @@ const TicketStore = create((set, get) => ({
         try {
             const response = await axios.get(`${API_URL}/api/categories/`);
             const categories = response.data.results;
+            // setPagination({next: categories.next, previous: categories.previous})
             set({categories}); // Сохранение категорий в состояние
         } catch (error) {
             console.error("Ошибка при загрузке категорий: ", error.message);
         }
     },
+
 
     // Метод для обновления статуса тикета
     updateTicketStatus: async (ticketId, data) => {
@@ -131,6 +134,8 @@ const TicketStore = create((set, get) => ({
             set({isLoading: false});
         }
     },
+
+
 
     // Функция для загрузки тикета по ID
     loadTicketById: async (ticketId) => {

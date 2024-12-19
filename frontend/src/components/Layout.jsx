@@ -33,21 +33,29 @@ export default function Layout({children}) {
                         <Link to='/home' className="hover:text-blue-500 transition-colors duration-300">О нас</Link>
                         <Link to='/Test' className="hover:text-blue-500 transition-colors duration-300">Команда</Link>
                         <Link to='/' className="hover:text-blue-500 transition-colors duration-300">FAQ</Link>
-                        {role === "support" ? (
-                            <button
-                                onClick={() => navigate('/tickets')}
-                                className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                            >
-                                Все тикеты
-                            </button>
-                        ) : (
-                            <button
-                                onClick={() => navigate('/tickets')}
-                                className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                            >
-                                Задать вопрос
-                            </button>
-                        )
+                        {
+                            role === "admin" ? (
+                                <button
+                                    onClick={() => navigate('/admin-dashboard')}
+                                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                                >
+                                    Админ панель
+                                </button>
+                            ) : role === "support" ? (
+                                <button
+                                    onClick={() => navigate('/tickets')}
+                                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                                >
+                                    Все тикеты
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => navigate('/tickets')}
+                                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                                >
+                                    Задать вопрос
+                                </button>
+                            )
                         }
 
 

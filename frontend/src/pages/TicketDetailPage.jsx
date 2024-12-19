@@ -5,12 +5,14 @@ import CommentStore from "../data/CommentStore";
 import Loader from "../components/Loader";
 import AuthStore from "../data/AuthStore";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 export default function TicketDetailPage() {
     const {user, role} = AuthStore.getState();
     const currentUserId = user ? user.id : null;
     const {ticketId} = useParams();
     const navigate = useNavigate();
+    const [assignedUser, setAssignedUser] = useState(null);
     const {ticket, loadTicketById, loadCategories, isLoading, categories, updateTicketStatus} = TicketStore();
     const {comments, fetchComments, addComment, isLoading: isCommentsLoading} = CommentStore();
     const [newComment, setNewComment] = useState("");
@@ -21,14 +23,31 @@ export default function TicketDetailPage() {
         const fetchData = async () => {
             await loadCategories();
             if (ticketId) {
-                await loadTicketById(ticketId);
+                await loadTicketById(ticketId);  // Загружаем тикет только один раз
                 await fetchComments(ticketId, currentUserId);
             }
         };
 
         fetchData();
-    }, [ticketId, loadTicketById, loadCategories, fetchComments, currentUserId]);
+    }, [ticketId, loadTicketById, loadCategories, fetchComments, currentUserId]);  // Убедись, что список зависимостей корректен
 
+    useEffect(() => {
+        if (ticket && ticket.assigned_to) {
+            // Запросить информацию о пользователе, который принял тикет
+            const fetchAssignedUser = async () => {
+                try {
+                    const API_URL = import.meta.env.VITE_API_URL;
+                    const response = await axios.get(`${API_URL}/api/user/${ticket.assigned_to}`);
+                    setAssignedUser(response.data); // Сохраняем информацию о пользователе
+                } catch (error) {
+                    console.error("Ошибка при загрузке пользователя:", error);
+                }
+            };
+
+            fetchAssignedUser();
+        }
+    }, [ticket]);
+    console.log("Тикет", ticket);  // Для отладки
     const handleAddComment = async () => {
         if (newComment.trim()) {
             try {
@@ -77,6 +96,9 @@ export default function TicketDetailPage() {
         <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
             <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 mb-6 animate-fade-in">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">Тикет: {ticket.title}</h1>
+                <p className="text-sm text-gray-500 mb-2">
+                    Принял: <span>{assignedUser ? assignedUser.username : 'Не назначен'}</span> {/* Выводим никнейм */}
+                </p>
                 <p className="text-sm text-gray-500 mb-2">
                     Статус: <span
                     className={`text-${ticket.status === 'open' ? 'green-500' : ticket.status === 'in_progress' ? 'yellow-500' : 'red-500'}`}>

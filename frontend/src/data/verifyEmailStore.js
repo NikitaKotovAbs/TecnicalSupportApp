@@ -3,6 +3,7 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL
 
 const verifyEmailStore = async (userId, verificationCode) => {
+
   try {
     console.log("UserId:", userId)
     const response = await axios.post(`${API_URL}/api/verify_code/`, {

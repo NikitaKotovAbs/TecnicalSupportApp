@@ -1,16 +1,17 @@
-import React, {useState} from 'react';
-import {useForm} from 'react-hook-form';
-import {useNavigate, Link} from "react-router-dom";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate, Link } from "react-router-dom";
 import AuthStore from '../data/AuthStore.js';
 import verifyEmailStore from '../data/verifyEmailStore.js';
 import VerificationCodeInput from '../components/VerificationCodeInput.jsx'; // Импортируем компонент
 
 const RegisterPage = () => {
     const navigate = useNavigate();
-    const {register, handleSubmit, formState: {errors}} = useForm();
-    const {register: registerUser, isLoading, error} = AuthStore();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register: registerUser, isLoading, error } = AuthStore();
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showVerificationModal, setShowVerificationModal] = useState(false);
+    const [showNoSuccessModal, setShowNoSuccessModal] = useState(false); // Исправлено
     const [userId, setUserId] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
 
@@ -26,10 +27,13 @@ const RegisterPage = () => {
 
     const onVerifyEmail = async () => {
         const result = await verifyEmailStore(userId, verificationCode);
-        console.log("Результат:", result);
-
-        if (result && !error) {
+        setShowVerificationModal(false);
+        console.log("Результат:", result.success);
+        console.log("Ошибка", result.error);
+        if (result.success) {
             setShowSuccessModal(true);
+        } else {
+            setShowNoSuccessModal(true); // Используем setShowNoSuccessModal
         }
     };
 
@@ -46,7 +50,7 @@ const RegisterPage = () => {
                         id="username"
                         {...register('username', {
                             required: 'Введите логин',
-                            minLength: {value: 3, message: 'Логин должен быть минимум 3 символа'}
+                            minLength: { value: 3, message: 'Логин должен быть минимум 3 символа' }
                         })}
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
@@ -60,7 +64,7 @@ const RegisterPage = () => {
                         id="email"
                         {...register('email', {
                             required: 'Введите email',
-                            pattern: {value: /\S+@\S+\.\S+/, message: 'Неверный формат email'}
+                            pattern: { value: /\S+@\S+\.\S+/, message: 'Неверный формат email' }
                         })}
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
@@ -74,7 +78,7 @@ const RegisterPage = () => {
                         id="password"
                         {...register('password', {
                             required: 'Введите пароль',
-                            minLength: {value: 6, message: 'Пароль должен быть минимум 6 символов'}
+                            minLength: { value: 6, message: 'Пароль должен быть минимум 6 символов' }
                         })}
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
@@ -82,14 +86,14 @@ const RegisterPage = () => {
                 </div>
 
                 <button type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                        disabled={isLoading}>
+                    className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+                    disabled={isLoading}>
                     {isLoading ? 'Загрузка...' : 'Зарегистрироваться'}
                 </button>
 
                 <div className="text-center mt-4">
                     <p className="text-gray-600">Уже есть аккаунт? <Link to="/auth"
-                                                                         className="text-blue-500 hover:underline">Авторизоваться</Link>
+                        className="text-blue-500 hover:underline">Авторизоваться</Link>
                     </p>
                 </div>
             </form>
@@ -124,6 +128,24 @@ const RegisterPage = () => {
                                 setShowSuccessModal(false);
                                 setShowVerificationModal(false);
                                 navigate('/auth');
+                            }}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition duration-200"
+                        >
+                            ОК
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {showNoSuccessModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                        <h3 className="text-2xl font-bold mb-4 text-center">Регистрация не завершена</h3>
+                        <p className="text-gray-600 text-center mb-6">Неверный код подтверждения, введите повторно</p>
+                        <button
+                            onClick={() => {
+                                setShowNoSuccessModal(false); // Используем setShowNoSuccessModal
+                                setShowVerificationModal(true);
                             }}
                             className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-600 transition duration-200"
                         >

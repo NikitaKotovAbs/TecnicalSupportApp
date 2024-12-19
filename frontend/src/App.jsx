@@ -9,7 +9,8 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import "tailwindcss/tailwind.css";
 import './App.css';
 import {useEffect} from "react";
-import AuthStore from './data/AuthStore.js'; // Убедитесь, что путь правильный
+import AuthStore from './data/AuthStore.js';
+import AdminDashboard from "./pages/AdminDashboard.jsx"; // Убедитесь, что путь правильный
 
 export default function App() {
 
@@ -38,7 +39,8 @@ export default function App() {
                         <Route path="/auth" element={<AuthPage/>}/>
                         <Route path="/tickets" element={<ProtectedRoute element={<TicketsPage/>}/>}/>
                         <Route path="/tickets/:ticketId" element={<ProtectedRoute element={<TicketDetailPage/>}/>}/>
-                        {/* <Route path="*" element={<ErrorMessage />} /> // Маршрут для ненайденных страниц */}
+                        <Route path="admin-dashboard" element={<AdminDashboard/>}/>
+                        {/*<Route path="*" element={<ErrorMessage />}/>*/}
                     </Routes>
                 </Layout>
             </div>
