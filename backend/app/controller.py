@@ -6,16 +6,19 @@ import os
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
-from rest_framework import viewsets, filters, status, generics
+from rest_framework import viewsets, filters, status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from .models import VerificationCode, TicketCategory, Ticket, Comment
 from .pagination import CustomPagination
-from .serializer import *
+from .serializer import User, LoginSerializer, TicketCategorySerializer, UserSerializer, TicketSerializer, \
+    CommentSerializer
 
 
 # Create your views here.
