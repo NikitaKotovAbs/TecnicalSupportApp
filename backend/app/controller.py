@@ -1,24 +1,36 @@
+import base64
+import io
 import random
+import sys
+
+import matplotlib
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 import subprocess
 import os
+
+from django.core.management import call_command
+from django.http import HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
+from rest_framework.exceptions import ValidationError
+
+from .models import Ticket
+import csv
+from django.db.models import Count
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
+from matplotlib import pyplot as plt
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import VerificationCode, TicketCategory, Ticket, Comment
 from .pagination import CustomPagination
-from .serializer import User, LoginSerializer, TicketCategorySerializer, UserSerializer, TicketSerializer, \
-    CommentSerializer
+from .serializer import *
 
 
 # Create your views here.
@@ -62,24 +74,40 @@ def verify_code(request):
     user_id = request.data.get('user_id')
     code = request.data.get('code')
 
+    if not user_id or not code:
+        return Response({"message": "user_id и code обязательны"}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
         verification = VerificationCode.objects.get(user_id=user_id, code=code)
         user = verification.user
-        user.is_active = True  # Активируем пользователя после успешной валидации кода
-        user.save()
-        verification.delete()  # Удаляем код после успешного подтверждения
-
-        # Генерация токена доступа после успешной верификации
-        refresh = RefreshToken.for_user(user)
+        activate_user(user)
+        verification.delete()
+        tokens = generate_tokens(user)
         return Response({
             "message": "Пользователь успешно подтвержден",
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
+            "access": tokens['access'],
+            "refresh": tokens['refresh'],
             "user_id": user.id
         }, status=status.HTTP_200_OK)
 
     except VerificationCode.DoesNotExist:
         return Response({"message": "Неверный код подтверждения"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def activate_user(user):
+    user.is_active = True  # Активируем пользователя после успешной валидации кода
+    user.save()
+
+
+def generate_tokens(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        "access": str(refresh.access_token),
+        "refresh": str(refresh)
+    }
+
+
+
 
 
 def get_logs(request):
@@ -90,28 +118,35 @@ def get_logs(request):
 
     try:
         with open(log_file_path, 'r') as log_file:
-            logs = log_file.readlines()[-10:]  # Получаем последние 10 записей лога
+            logs = log_file.readlines()
         return JsonResponse({'status': 'success', 'logs': logs})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
+
+
+
+
+
 @csrf_exempt
 def backup_database(request):
-    try:
-        # Путь для бэкапа
-        backup_dir = "../backups"
-        os.makedirs(backup_dir, exist_ok=True)  # Создаст папку, если она не существует
-        backup_file = os.path.join(backup_dir, "backup.sql")
+    if request.method == 'POST':
+        backup_dir = 'backups'
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
 
-        # Выполнение команды pg_dump для бэкапа базы данных
-        command = f"pg_dump -U postgres -h localhost -p 5432 technicalsupport > {backup_file}"
-        subprocess.run(command, shell=True, check=True)
-        return JsonResponse({"status": "success", "message": "Бэкап выполнен успешно!"})
-    except subprocess.CalledProcessError as e:
-        # Логирование ошибки
-        error_message = f"Ошибка выполнения бэкапа: {str(e)}"
-        print(error_message)  # Печать в консоль сервера
-        return JsonResponse({"status": "error", "message": error_message})
+        backup_file = os.path.join(backup_dir, f'backup_{timezone.now().strftime("%Y%m%d%H%M%S")}.json')
+
+        try:
+            with open(backup_file, 'w') as f:
+                subprocess.run([sys.executable, 'manage.py', 'dumpdata', '--indent', '4'], stdout=f)
+            return JsonResponse({"status": "success", "message": "Бэкап выполнен успешно!"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return JsonResponse({"status": "error", "message": "Недопустимый метод запроса."}, status=400)
+
+
 
 
 
@@ -176,6 +211,118 @@ class CommentViewSet(viewsets.ModelViewSet):
     # def perform_create(self, serializer):
     #     serializer.save(author=self.request.user)  # Устанавливаем автора на текущего аутентифицированного пользователя
 
+
 # class TicketCreateView(generics.CreateAPIView):
 #     queryset = Ticket.objects.all()
 #     serializer_class = TicketSerializer
+
+# -*- coding: utf-8 -*-
+
+
+matplotlib.use('Agg')  # Используйте 'Agg' backend для избежания проблем с GUI
+
+
+class GraphView(APIView):
+    def get(self, request, *args, **kwargs):
+        data = Ticket.objects.values('category__name').annotate(count=Count('id')).order_by('category__name')
+        categories = [item['category__name'] for item in data]
+        counts = [item['count'] for item in data]
+
+        plt.figure(figsize=(10, 6))
+        plt.bar(categories, counts, color='skyblue')
+        plt.title('Количество созданных тикетов по категориям')
+        plt.xlabel('Категории')
+        plt.ylabel('Количество тикетов')
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        plt.close()
+
+        return Response({"graph": image_base64}, status=status.HTTP_200_OK)
+
+
+class TicketStatusGraphView(APIView):
+    def get(self, request, *args, **kwargs):
+        data = Ticket.objects.values('status').annotate(count=Count('id')).order_by('status')
+        statuses = [item['status'] for item in data]
+        counts = [item['count'] for item in data]
+
+        plt.figure(figsize=(10, 6))
+        plt.pie(counts, labels=statuses, autopct='%1.1f%%', startangle=140, colors=['skyblue', 'orange', 'green'])
+        plt.title('Распределение тикетов по статусам')
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        plt.close()
+
+        return Response({"graph": image_base64}, status=status.HTTP_200_OK)
+
+
+
+
+def export_tickets_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="tickets.csv"'
+    response.write('\ufeff'.encode('utf8'))  # Добавляем BOM для правильной кодировки
+
+    writer = csv.writer(response)
+    writer.writerow(
+        ['ID', 'Title', 'Description', 'Status', 'Priority', 'Created At', 'Updated At', 'Assigned To', 'Created By',
+         'Category']
+    )
+
+    tickets = Ticket.objects.all()
+    for ticket in tickets:
+        writer.writerow([
+            ticket.id,
+            ticket.title,
+            ticket.description,
+            ticket.status,
+            ticket.priority,
+            ticket.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            ticket.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+            ticket.assigned_to_id if ticket.assigned_to else '',
+            ticket.created_by_id,
+            ticket.category_id if ticket.category else ''
+        ])
+
+    return response
+
+
+@csrf_exempt
+def import_tickets_csv(request):
+    if request.method == 'POST':
+        csv_file = request.FILES['file']
+        decoded_file = csv_file.read().decode('utf-8').splitlines()
+        reader = csv.reader(decoded_file)
+
+        next(reader)  # Пропустить заголовок
+        errors = []
+        for i, row in enumerate(reader):
+            try:
+                ticket = Ticket.objects.create(
+                    title=row[1],
+                    description=row[2],
+                    status=row[3],
+                    priority=row[4],
+                    created_at=row[5],
+                    updated_at=row[6],
+                    assigned_to_id=row[7] if row[7].isdigit() else None,
+                    created_by_id=row[8] if row[8].isdigit() else None,
+                    category_id=row[9] if row[9].isdigit() else None
+                )
+            except ValidationError as e:
+                errors.append((i + 2, str(e)))
+            except ValueError as e:
+                errors.append((i + 2, str(e)))
+
+        if errors:
+            return JsonResponse({"status": "error", "errors": errors}, status=400)
+
+        return JsonResponse({"status": "success"})
+
+    return JsonResponse({"status": "error"}, status=400)

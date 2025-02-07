@@ -9,8 +9,8 @@ User = get_user_model()
 class AuthTests(APITestCase):
 
     def setUp(self):
-        self.username = 'testuser'
-        self.password = 'testpassword'
+        self.username = 'kit'
+        self.password = 'kitkitkit'
         self.user = User.objects.create_user(username=self.username, password=self.password)
 
     def test_login_success(self):

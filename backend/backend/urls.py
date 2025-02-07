@@ -18,9 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from app.controller import TicketViewSet, TicketCategoryViewSet, ProtectedEndpointView, CommentViewSet, UserViewSet, \
-    register, verify_code, backup_database, get_logs
+    register, verify_code, backup_database, get_logs, GraphView, TicketStatusGraphView, export_tickets_csv, import_tickets_csv
 from app.controller import LoginView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 router = routers.DefaultRouter()
 router.register('tickets', TicketViewSet)
 router.register('categories', TicketCategoryViewSet)
@@ -35,7 +36,11 @@ urlpatterns = [
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('backup-database/', backup_database, name='backup_database'),
+    path('backup-database/', backup_database, name='backup-database'),
     path('get-logs/', get_logs, name='get_logs'),
     path('api/protected/', ProtectedEndpointView.as_view(), name='protected_endpoint'),  # защищенный эндпоинт
+    path('graph/', GraphView.as_view(), name='graph'),
+    path('ticket-status-graph/', TicketStatusGraphView.as_view(), name='ticket-status-graph'),
+    path('export-tickets-csv/', export_tickets_csv, name='export-tickets-csv'),
+    path('import-tickets-csv/', import_tickets_csv, name='import-tickets-csv'),
 ]

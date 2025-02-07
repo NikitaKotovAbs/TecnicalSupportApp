@@ -9,7 +9,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.016) 
+(0.016)
             SELECT
                 c.relname,
                 CASE
@@ -1118,7 +1118,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.015) 
+(0.015)
             SELECT
                 c.relname,
                 CASE
@@ -2224,7 +2224,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.016) 
+(0.016)
             SELECT
                 c.relname,
                 CASE
@@ -3332,7 +3332,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.015) 
+(0.015)
             SELECT
                 c.relname,
                 CASE
@@ -4385,7 +4385,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.000) 
+(0.000)
             SELECT
                 c.relname,
                 CASE
@@ -7425,7 +7425,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.016) 
+(0.016)
             SELECT
                 c.relname,
                 CASE
@@ -8475,7 +8475,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.016) 
+(0.016)
             SELECT
                 c.relname,
                 CASE
@@ -9528,7 +9528,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.000) 
+(0.000)
             SELECT
                 c.relname,
                 CASE
@@ -10578,7 +10578,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.000) 
+(0.000)
             SELECT
                 c.relname,
                 CASE
@@ -11631,7 +11631,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.000) 
+(0.000)
             SELECT
                 c.relname,
                 CASE
@@ -13016,7 +13016,7 @@ Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\si
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\PCBuildingDjangoProject\.venv\Lib\site-packages\rest_framework_simplejwt\locale with glob **/*.mo.
 Watching dir C:\Users\nikit\PycharmProjects\TechnicalSupportIT\backend\app\locale with glob **/*.mo.
-(0.015) 
+(0.015)
             SELECT
                 c.relname,
                 CASE

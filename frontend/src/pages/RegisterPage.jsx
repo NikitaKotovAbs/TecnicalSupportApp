@@ -23,6 +23,8 @@ const RegisterPage = () => {
             setUserId(result.id);
             setShowVerificationModal(true);
         }
+        console.log("showVerificationModal:", showVerificationModal);
+
     };
 
     const onVerifyEmail = async () => {

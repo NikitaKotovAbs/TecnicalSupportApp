@@ -1,14 +1,14 @@
 name: Syntax Check
 
 on: [push, pull_request]
-
+# Описание задач, которые типа пайплайн выполнит
 jobs:
   syntax-check:
     runs-on: ubuntu-latest
-
+# Список шагов которые будут выполнены
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2 # Клонирует репозиторий в раб папку
 
     - name: Set up Python
       uses: actions/setup-python@v2

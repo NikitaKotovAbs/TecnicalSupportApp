@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
 from datetime import timedelta
 
@@ -40,11 +41,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_filters',
     'corsheaders',
+    'drf_yasg',
+    'django_extensions',
+    'import_export',
     'rest_framework',
     'rest_framework_simplejwt',
     'app'
 
 ]
+
+GRAPHVIZ_DOT = 'C:/Program Files/Graphviz/bin/dot.exe'
+
+
 
 # Настройка REST Framework
 REST_FRAMEWORK = {
@@ -67,18 +75,21 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'api_requests.log'), # Файл для хранения логов
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'verbose'
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
         },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
     },
 }
 
@@ -95,12 +106,34 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'app.middleware.RequestLoggingMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # Не рекомендуется для продакшена, лучше использовать CORS_ALLOWED_ORIGINS
+# Настройки CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Адрес вашего фронтенд приложения
+    "http://localhost:5173",  # Добавьте здесь адрес вашего фронтенд приложения
+]
+
+# Настройки для защиты CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",  # Адрес вашего фронтенд приложения
+    "http://localhost:5173",  # Добавьте здесь адрес вашего фронтенд приложения
+]
+
+# Настройки для запроса OPTIONS (preflight request)
+CORS_ALLOW_HEADERS = [
+    'content-disposition',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 ROOT_URLCONF = 'backend.urls'
 
